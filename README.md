@@ -32,10 +32,14 @@ A 1380x820 window opens showing three algorithm panels side by side.
 ## How to Use (Demo Guide)
 
 ### Map Editing
-- **Brush toolbar (top row):** Select Wall, Empty, Grass (cost 2), Swamp (cost 5), Start, or Goal.
+- **Brush toolbar (top row):** Select Wall, Empty, Grass (cost 2), Swamp (cost 5), Start, Goal, or **Predict Path**.
 - **Left-click / drag** on any panel's grid to paint with the selected brush.
-- **Right-click / drag** to erase (set cell to Empty).
+- **Right-click / drag** to erase (set cell to Empty, or erase predicted path).
 - **Preset maps:** Click Maze, Barrier, or Random for pre-built scenarios. Random generates a new layout each time.
+
+### Gameplay Modes (New Features)
+- **Layer 1: The Trap (Tower Defense)**: When using the **Wall** brush, you are limited to placing a maximum of **5 walls**. Use these limited walls to create traps and observe how A* Manhattan falls for local optima compared to Dijkstra.
+- **Layer 2: The Swamp (Predict Path)**: Use the hot pink **Predict Path** brush to draw what you think will be the shortest path considering the terrain costs (Grass = 2, Swamp = 5). After drawing your path, click **Run** and check the comparison table at the bottom to see if your `Predict Cost` matches the actual `Path cost`!
 
 ### Running Algorithms
 - Press **R** or click **Run** to start all three algorithms simultaneously.
