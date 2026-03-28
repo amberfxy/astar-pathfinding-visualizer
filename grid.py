@@ -29,6 +29,10 @@ class Grid:
 
     # ── Cell access ────────────────────────────────────────────────────────
 
+    def get_terrain(self, r: int, c: int) -> str:
+        """Return terrain type of the given cell."""
+        return self.cells[r][c]
+
     def in_bounds(self, r: int, c: int) -> bool:
         return 0 <= r < self.rows and 0 <= c < self.cols
 

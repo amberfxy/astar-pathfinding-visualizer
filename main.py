@@ -94,7 +94,11 @@ class App:
         ('swamp', 'Swamp',  TERRAIN_COLOR['swamp']),
         ('start', 'Start',  C_START),
         ('goal',  'Goal',   C_GOAL),
+        ('predict', 'Predict Path', (255, 105, 180)), # Hot Pink for prediction
     ]
+
+    # Layer 1: The Trap constraints
+    MAX_WALLS = 5
 
     def __init__(self) -> None:
         pygame.init()
@@ -119,6 +123,9 @@ class App:
         self.last_cell: tuple[int, int] | None = None   # avoid redundant repaints
         self.show_vals = True
 
+        self.predicted_path: list[tuple[int, int]] = []
+        self.wall_count = 0  # Number of walls placed by the player
+        
         # ── Algorithm generators & latest states ───────────────────────────
         self.gens:   list                          = [None, None, None]
         self.states: list[AlgState | None]         = [None, None, None]
@@ -143,11 +150,12 @@ class App:
         self.brush_btns: list[Button] = []
         x = 10
         for terrain, label, color in self.BRUSHES:
-            btn = Button((x, ROW1_Y, 78, H), label, swatch=color)
+            btn_w = 100 if terrain == 'predict' else 78
+            btn = Button((x, ROW1_Y, btn_w, H), label, swatch=color)
             btn.active  = (terrain == self.brush)
             btn.terrain = terrain          # type: ignore[attr-defined]
             self.brush_btns.append(btn)
-            x += 82
+            x += btn_w + 4
 
         # ── Row 1 right: preset maps ───────────────────────────────────────
         self.preset_btns: list[Button] = []
@@ -296,13 +304,31 @@ class App:
                 self.last_cell = (row, col)
 
                 if erase:
-                    self.grid.set_terrain(row, col, 'empty')
+                    if self.brush == 'predict':
+                        if (row, col) in self.predicted_path:
+                            self.predicted_path.remove((row, col))
+                    else:
+                        if self.grid.get_terrain(row, col) == 'wall':
+                            self.wall_count = max(0, self.wall_count - 1)
+                        self.grid.set_terrain(row, col, 'empty')
                 elif self.brush == 'start':
                     self.grid.move_start(row, col)
                 elif self.brush == 'goal':
                     self.grid.move_goal(row, col)
+                elif self.brush == 'predict':
+                    if (row, col) not in self.predicted_path:
+                        self.predicted_path.append((row, col))
                 else:
-                    self.grid.set_terrain(row, col, self.brush)
+                    if self.brush == 'wall' and self.grid.get_terrain(row, col) != 'wall':
+                        if self.wall_count < self.MAX_WALLS:
+                            self.grid.set_terrain(row, col, self.brush)
+                            self.wall_count += 1
+                        else:
+                            print("Max walls reached!")
+                    elif self.brush != 'wall':
+                        if self.grid.get_terrain(row, col) == 'wall':
+                            self.wall_count = max(0, self.wall_count - 1)
+                        self.grid.set_terrain(row, col, self.brush)
 
                 # Invalidate results when grid changes
                 if any(s is not None for s in self.states):
@@ -352,10 +378,13 @@ class App:
         self.animating = False
         self._logged   = False
         self.action_btns['play'].label = '▶ Play'
+        self.predicted_path.clear()
 
     def _do_clear(self) -> None:
         self._do_reset()
         self.grid.clear()
+        self.predicted_path.clear()
+        self.wall_count = 0
 
     def _toggle_vals(self) -> None:
         self.show_vals = not self.show_vals
@@ -504,6 +533,12 @@ class App:
                 pygame.draw.rect(self.screen, color, rect)
                 pygame.draw.rect(self.screen, C_GRID_LINE, rect, 1)
 
+                # ── Predicted path overlay ────────────────────────────────
+                if pos in self.predicted_path and pos not in (grid.start, grid.goal):
+                    # Draw a smaller inner rect to show prediction on top of terrain/state
+                    pred_rect = pygame.Rect(x + 4, y + 4, CELL - 8, CELL - 8)
+                    pygame.draw.rect(self.screen, (255, 105, 180), pred_rect, border_radius=2)
+
                 # ── f(n) overlay ──────────────────────────────────────────
                 if (self.show_vals and state is not None
                         and pos in state.expanded
@@ -562,9 +597,25 @@ class App:
         lines = [
             f'Expanded : {state.nodes_expanded}',
         ]
+        
+        # Calculate predicted cost
+        predicted_cost = 0.0
+        if self.predicted_path:
+            for p in self.predicted_path:
+                predicted_cost += self.grid.get_cost(p[0], p[1])
+                
+        if self.predicted_path:
+            lines.append(f'Predict Cost: {predicted_cost}')
+            
         if state.done:
             if state.found:
                 lines.append(f'Path cost: {state.path_cost:.2f}  |  len: {len(state.path)}')
+                if self.predicted_path:
+                    if abs(predicted_cost - state.path_cost) < 0.001:
+                        lines.append(f'Prediction: EXACT MATCH!')
+                    else:
+                        lines.append(f'Prediction diff: {abs(predicted_cost - state.path_cost)}')
+                        
                 lines.append(f'Runtime  : {state.runtime_ms:.3f} ms')
                 lines.append('Status   : ✓ Path found')
             else:
