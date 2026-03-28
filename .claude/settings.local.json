@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"import py_compile; py_compile.compile\\(''main.py'', doraise=True\\); py_compile.compile\\(''grid.py'', doraise=True\\); py_compile.compile\\(''logger.py'', doraise=True\\); py_compile.compile\\(''algorithms.py'', doraise=True\\); print\\(''All files compile OK''\\)\")",
+      "Bash(python3 -c \"import py_compile; py_compile.compile\\(''main.py'', doraise=True\\); py_compile.compile\\(''grid.py'', doraise=True\\); py_compile.compile\\(''logger.py'', doraise=True\\); py_compile.compile\\(''algorithms.py'', doraise=True\\); print\\(''All files compile OK''\\)\")"
+    ]
+  }
+}
