@@ -161,7 +161,7 @@ class App:
 
         # ── Row 1 right: preset maps ───────────────────────────────────────
         self.preset_btns: list[Button] = []
-        px = 530
+        px = 640  # Moved further right to avoid overlapping with Predict Path
         for label, key in [('Maze', 'maze'), ('Barrier', 'barrier'), ('Random', 'random')]:
             btn = Button((px, ROW1_Y, 75, H), label)
             btn.key = key      # type: ignore[attr-defined]
