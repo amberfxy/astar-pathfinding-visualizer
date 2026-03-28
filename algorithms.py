@@ -106,11 +106,15 @@ def _search_gen(
         path=[],
     )
 
+    accumulated_time = 0.0
+
     # ── Main loop ──────────────────────────────────────────────────────────
     while heap:
+        t0 = time.perf_counter()
         _, _, pos = heapq.heappop(heap)
 
         if pos in closed:
+            accumulated_time += time.perf_counter() - t0
             open_set.discard(pos)
             continue
 
@@ -119,13 +123,18 @@ def _search_gen(
 
         state.current        = pos
         state.nodes_expanded = len(closed)
+        accumulated_time += time.perf_counter() - t0
+        
         yield state          # ← one step of animation
+        
+        t0 = time.perf_counter()
 
         # ── Goal reached ───────────────────────────────────────────────────
         if pos == goal:
             state.path       = _reconstruct(came_from, goal)
             state.path_cost  = g[goal]
-            state.runtime_ms = (time.perf_counter() - t0) * 1000
+            accumulated_time += time.perf_counter() - t0
+            state.runtime_ms = accumulated_time * 1000
             state.done       = True
             state.found      = True
             yield state
@@ -144,10 +153,12 @@ def _search_gen(
                 counter      += 1
                 heapq.heappush(heap, (tg + hn, counter, nb))
                 open_set.add(nb)
+                
+        accumulated_time += time.perf_counter() - t0
 
     # ── No path ────────────────────────────────────────────────────────────
     state.current        = None
-    state.runtime_ms     = (time.perf_counter() - t0) * 1000
+    state.runtime_ms     = accumulated_time * 1000
     state.nodes_expanded = len(closed)
     state.done           = True
     state.found          = False
