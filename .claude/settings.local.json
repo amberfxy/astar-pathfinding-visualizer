@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(python -c \"import py_compile; py_compile.compile\\(''main.py'', doraise=True\\); py_compile.compile\\(''grid.py'', doraise=True\\); py_compile.compile\\(''logger.py'', doraise=True\\); py_compile.compile\\(''algorithms.py'', doraise=True\\); print\\(''All files compile OK''\\)\")",
-      "Bash(python3 -c \"import py_compile; py_compile.compile\\(''main.py'', doraise=True\\); py_compile.compile\\(''grid.py'', doraise=True\\); py_compile.compile\\(''logger.py'', doraise=True\\); py_compile.compile\\(''algorithms.py'', doraise=True\\); print\\(''All files compile OK''\\)\")"
+      "Bash(python3 -c \"import py_compile; py_compile.compile\\(''main.py'', doraise=True\\); py_compile.compile\\(''grid.py'', doraise=True\\); py_compile.compile\\(''logger.py'', doraise=True\\); py_compile.compile\\(''algorithms.py'', doraise=True\\); print\\(''All files compile OK''\\)\")",
+      "Bash(ls /Users/jiaxin/Desktop/CS5800/Astar-Visualizer/5800-Astar-Visualizer/*.py)",
+      "Bash(python -c \"import main\")",
+      "Bash(python -c \"from constants import *; print\\(f''WIN_H={WIN_H}, TOOLBAR_H={TOOLBAR_H}, GRID_Y={GRID_Y}, METRICS_Y={METRICS_Y}, LEGEND_Y={LEGEND_Y}, LEGEND_H={LEGEND_H}''\\)\")"
     ]
   }
 }

@@ -4,7 +4,7 @@ All magic numbers live here so other modules stay clean.
 """
 
 # ── Window ─────────────────────────────────────────────────────────────────
-WIN_W, WIN_H = 1380, 820
+WIN_W, WIN_H = 1380, 858
 FPS          = 60
 
 # ── Grid geometry ──────────────────────────────────────────────────────────
@@ -13,7 +13,7 @@ GRID_N  = 20            # rows = cols
 GRID_PX = GRID_N * CELL # 400 px
 
 # ── Panel layout ───────────────────────────────────────────────────────────
-TOOLBAR_H     = 102     # top toolbar height
+TOOLBAR_H     = 140     # top toolbar height
 PANEL_W       = GRID_PX + 20   # 420 — 10 px padding each side
 PANEL_MARGIN  = 10
 # x origin of each of the 3 panels

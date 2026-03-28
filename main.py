@@ -51,10 +51,12 @@ class Button:
         rect: tuple[int, int, int, int],
         label: str,
         swatch: tuple[int, int, int] | None = None,
+        icon: str | None = None,
     ) -> None:
         self.rect    = pygame.Rect(rect)
         self.label   = label
-        self.swatch  = swatch      # optional coloured square on left
+        self.swatch  = swatch      # legacy: coloured square (used by non-brush buttons)
+        self.icon    = icon        # icon type for brush buttons
         self.active  = False
         self.hovered = False
 
@@ -66,19 +68,112 @@ class Button:
 
     def draw(self, surf: pygame.Surface, font: pygame.font.Font) -> None:
         bg = C_BTN_ACTIVE if self.active else (C_BTN_HOVER if self.hovered else C_BTN_IDLE)
-        pygame.draw.rect(surf, bg,       self.rect, border_radius=5)
-        pygame.draw.rect(surf, C_BORDER, self.rect, 1, border_radius=5)
+        pygame.draw.rect(surf, bg, self.rect, border_radius=8)
 
-        x_off = 6
-        if self.swatch is not None:
-            sr = pygame.Rect(self.rect.x + 5, self.rect.centery - 6, 12, 12)
-            pygame.draw.rect(surf, self.swatch, sr, border_radius=2)
-            pygame.draw.rect(surf, (160, 160, 160), sr, 1, border_radius=2)
-            x_off = 22
+        if self.icon in ('start', 'goal'):
+            # Neon glow border — always visible, brighter when active
+            neon = (50, 220, 80) if self.icon == 'start' else (230, 30, 65)
+            alpha = 255 if self.active else 160
+            border_col = tuple(int(c * alpha / 255) for c in neon)
+            pygame.draw.rect(surf, border_col, self.rect, 2, border_radius=8)
+        else:
+            pygame.draw.rect(surf, C_BORDER, self.rect, 1, border_radius=8)
 
-        lbl = font.render(self.label, True, C_BTN_TEXT)
-        surf.blit(lbl, (self.rect.x + x_off,
-                        self.rect.centery - lbl.get_height() // 2))
+        if self.icon:
+            # Icon centred in upper area, label at the bottom
+            icon_cy = self.rect.top + (self.rect.height - 18) // 2
+            cx = self.rect.centerx
+            self._draw_icon(surf, cx, icon_cy)
+            lbl = font.render(self.label, True, C_BTN_TEXT)
+            lx = self.rect.centerx - lbl.get_width() // 2
+            ly = self.rect.bottom - lbl.get_height() - 4
+            surf.blit(lbl, (lx, ly))
+        else:
+            # Legacy layout: optional swatch + centred text
+            x_off = 6
+            if self.swatch is not None:
+                sr = pygame.Rect(self.rect.x + 5, self.rect.centery - 6, 12, 12)
+                pygame.draw.rect(surf, self.swatch, sr, border_radius=2)
+                pygame.draw.rect(surf, (160, 160, 160), sr, 1, border_radius=2)
+                x_off = 22
+            lbl = font.render(self.label, True, C_BTN_TEXT)
+            surf.blit(lbl, (self.rect.x + x_off,
+                            self.rect.centery - lbl.get_height() // 2))
+
+    # ── Icon drawing helpers ────────────────────────────────────────────────
+
+    def _draw_icon(self, surf: pygame.Surface, cx: int, cy: int) -> None:
+        if self.icon == 'wall':
+            self._icon_wall(surf, cx, cy)
+        elif self.icon == 'erase':
+            self._icon_erase(surf, cx, cy)
+        elif self.icon == 'grass':
+            self._icon_grass(surf, cx, cy)
+        elif self.icon == 'swamp':
+            self._icon_swamp(surf, cx, cy)
+        elif self.icon == 'start':
+            self._icon_circle(surf, cx, cy, (50, 205, 50))
+        elif self.icon == 'goal':
+            self._icon_circle(surf, cx, cy, (220, 20, 60))
+        elif self.icon == 'predict':
+            self._icon_predict(surf, cx, cy)
+
+    def _icon_wall(self, surf: pygame.Surface, cx: int, cy: int) -> None:
+        col = (178, 174, 180)
+        bw, bh, g = 14, 6, 2
+        offsets = [0, bw // 2 + g // 2, 0]
+        for row in range(3):
+            y0 = cy - bh - g + row * (bh + g)
+            ox = cx - bw - g // 2 + offsets[row]
+            for _ in range(2):
+                pygame.draw.rect(surf, col, (ox, y0, bw, bh), border_radius=1)
+                ox += bw + g
+
+    def _icon_erase(self, surf: pygame.Surface, cx: int, cy: int) -> None:
+        col_h = (200, 155, 80)   # handle (wood)
+        col_b = (225, 195, 120)  # bristles (straw)
+        # Handle: diagonal stick
+        pygame.draw.line(surf, col_h, (cx + 10, cy - 14), (cx - 3, cy + 6), 3)
+        # Bristle fan at the bottom of the handle
+        bx, by = cx - 8, cy + 10
+        for i in range(5):
+            angle = math.pi * (0.75 + i * 0.125)
+            ex = int(bx + 13 * math.cos(angle))
+            ey = int(by + 13 * math.sin(angle))
+            pygame.draw.line(surf, col_b, (bx, by), (ex, ey), 2)
+
+    def _icon_grass(self, surf: pygame.Surface, cx: int, cy: int) -> None:
+        col1 = (105, 190, 65)   # main blade
+        col2 = (72, 150, 45)    # side blades
+        # Left blade
+        pygame.draw.polygon(surf, col2, [(cx - 9, cy - 8), (cx - 14, cy + 9), (cx - 4, cy + 9)])
+        # Right blade
+        pygame.draw.polygon(surf, col2, [(cx + 9, cy - 8), (cx + 4, cy + 9), (cx + 14, cy + 9)])
+        # Centre blade (on top)
+        pygame.draw.polygon(surf, col1, [(cx, cy - 15), (cx - 6, cy + 9), (cx + 6, cy + 9)])
+
+    def _icon_swamp(self, surf: pygame.Surface, cx: int, cy: int) -> None:
+        col = (85, 130, 195)
+        # Teardrop: triangle tip + circular body
+        pygame.draw.polygon(surf, col, [(cx, cy - 14), (cx - 10, cy + 2), (cx + 10, cy + 2)])
+        pygame.draw.circle(surf, col, (cx, cy + 4), 10)
+
+    def _icon_circle(self, surf: pygame.Surface, cx: int, cy: int,
+                     color: tuple[int, int, int]) -> None:
+        r = 14
+        glow = tuple(c // 3 for c in color)
+        pygame.draw.circle(surf, glow, (cx, cy), r + 5)
+        pygame.draw.circle(surf, color, (cx, cy), r)
+        hl = tuple(min(255, c + 90) for c in color)
+        pygame.draw.circle(surf, hl, (cx - 4, cy - 4), 4)
+
+    def _icon_predict(self, surf: pygame.Surface, cx: int, cy: int) -> None:
+        col = (255, 105, 180)
+        pts = [(cx - 12, cy + 8), (cx - 4, cy - 5), (cx + 4, cy + 8), (cx + 12, cy - 5)]
+        for i in range(len(pts) - 1):
+            pygame.draw.line(surf, col, pts[i], pts[i + 1], 2)
+        # Arrow head
+        pygame.draw.polygon(surf, col, [(cx + 12, cy - 5), (cx + 8, cy - 12), (cx + 16, cy - 12)])
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -88,14 +183,15 @@ class Button:
 class App:
 
     # ── Brushes available in toolbar ──────────────────────────────────────
+    # (terrain, label, swatch_legacy, icon)
     BRUSHES = [
-        ('wall',  'Wall',   TERRAIN_COLOR['wall']),
-        ('empty', 'Empty',  TERRAIN_COLOR['empty']),
-        ('grass', 'Grass',  TERRAIN_COLOR['grass']),
-        ('swamp', 'Swamp',  TERRAIN_COLOR['swamp']),
-        ('start', 'Start',  C_START),
-        ('goal',  'Goal',   C_GOAL),
-        ('predict', 'Predict Path', (255, 105, 180)), # Hot Pink for prediction
+        ('wall',    'Walls',        None, 'wall'),
+        ('empty',   'Erase',        None, 'erase'),
+        ('grass',   'Grass',        None, 'grass'),
+        ('swamp',   'Swamp',        None, 'swamp'),
+        ('start',   'Start',        None, 'start'),
+        ('goal',    'Goal',         None, 'goal'),
+        ('predict', 'Predict Path', None, 'predict'),
     ]
 
     # Layer 1: The Trap constraints
@@ -144,16 +240,17 @@ class App:
     # ── Toolbar construction ───────────────────────────────────────────────
 
     def _build_toolbar(self) -> None:
-        ROW1_Y = 8
-        ROW2_Y = 54
+        ROW1_Y = 6
+        ROW1_H = 96   # tall icon buttons
+        ROW2_Y = ROW1_Y + ROW1_H + 6
         H = 36
 
         # ── Row 1: Brush buttons ───────────────────────────────────────────
         self.brush_btns: list[Button] = []
         x = 10
-        for terrain, label, color in self.BRUSHES:
-            btn_w = 100 if terrain == 'predict' else 78
-            btn = Button((x, ROW1_Y, btn_w, H), label, swatch=color)
+        for terrain, label, _swatch, icon in self.BRUSHES:
+            btn_w = 108 if terrain == 'predict' else 78
+            btn = Button((x, ROW1_Y, btn_w, ROW1_H), label, icon=icon)
             btn.active  = (terrain == self.brush)
             btn.terrain = terrain          # type: ignore[attr-defined]
             self.brush_btns.append(btn)
@@ -161,12 +258,12 @@ class App:
 
         # ── Row 1 right: preset maps ───────────────────────────────────────
         self.preset_btns: list[Button] = []
-        px = 640  # Moved further right to avoid overlapping with Predict Path
+        px = 660
         for label, key in [('Maze', 'maze'), ('Barrier', 'barrier'), ('Random', 'random')]:
-            btn = Button((px, ROW1_Y, 75, H), label)
+            btn = Button((px, ROW1_Y, 78, ROW1_H), label)
             btn.key = key      # type: ignore[attr-defined]
             self.preset_btns.append(btn)
-            px += 80
+            px += 83
 
         # ── Row 2: Action & speed buttons ─────────────────────────────────
         self.action_btns: dict[str, Button] = {}
@@ -469,21 +566,18 @@ class App:
         pygame.draw.rect(self.screen, C_TOOLBAR, (0, 0, WIN_W, TOOLBAR_H))
         pygame.draw.line(self.screen, C_BORDER, (0, TOOLBAR_H - 1), (WIN_W, TOOLBAR_H - 1))
 
-        # Title (top-left)
+        # Title (top-right)
         title = self.f_title.render(
             'A* Pathfinding Visualizer  ·  CS5800', True, C_ACCENT)
         self.screen.blit(title, (WIN_W - title.get_width() - 12, 10))
 
-        # Row 1 label
-        lbl = self.f_small.render('Brush:', True, C_DIM)
-        self.screen.blit(lbl, (10, 18))
-
-        # Row 2 labels
+        # Row 2 labels (controls row)
+        row2_label_y = TOOLBAR_H - 36 - 14   # just above the action buttons
         lbl2 = self.f_small.render('Controls:', True, C_DIM)
-        self.screen.blit(lbl2, (10, 64))
+        self.screen.blit(lbl2, (10, row2_label_y))
 
         spd_lbl = self.f_small.render('Speed:', True, C_DIM)
-        self.screen.blit(spd_lbl, (520, 64))
+        self.screen.blit(spd_lbl, (520, row2_label_y))
 
         all_btns = (self.brush_btns + self.preset_btns
                     + list(self.action_btns.values()) + self.speed_btns)

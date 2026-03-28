@@ -68,3 +68,6 @@ timestamp,algorithm,grid_hash,grid_rows,grid_cols,nodes_expanded,path_cost,path_
 2026-03-27T20:08:26,Dijkstra,239cf6e2aa,20,20,280,19.0000,16,23288.265708,True
 2026-03-27T20:08:26,A* — Manhattan,239cf6e2aa,20,20,36,19.0000,16,3001.695209,True
 2026-03-27T20:08:26,A* — Euclidean,239cf6e2aa,20,20,44,19.0000,16,3659.461250,True
+2026-03-27T20:34:34,Dijkstra,5cedcce8b1,20,20,260,16.0000,16,7.154936,True
+2026-03-27T20:34:34,A* — Manhattan,5cedcce8b1,20,20,16,16.0000,16,0.178041,True
+2026-03-27T20:34:34,A* — Euclidean,5cedcce8b1,20,20,16,16.0000,16,0.159290,True
