@@ -57,6 +57,10 @@ C_PATH     = (148,   0, 211)   # dark violet      — optimal path
 C_START    = ( 50, 205,  50)   # lime green
 C_GOAL     = (220,  20,  60)   # crimson
 
+# ── Neon Path Effect Constants (For Layer 3 & 4) ──────────────────────────
+PULSE_SPEED = 5.0              # Speed of the neon pulsing effect
+C_PATH_GLOW = (220, 80, 255)   # Lighter violet/pink for the glowing state
+
 # ── UI palette ─────────────────────────────────────────────────────────────
 C_BG        = ( 28,  28,  38)
 C_PANEL_BG  = ( 40,  42,  54)

@@ -21,6 +21,7 @@ Course : CS5800 — Algorithms
 """
 from __future__ import annotations
 
+import math
 import sys
 import pygame
 
@@ -135,6 +136,7 @@ class App:
         self.speed_idx  = SPEED_IDX
         self.animating  = False
         self._logged    = False
+        self.global_time = 0.0
 
         # ── Toolbar buttons ────────────────────────────────────────────────
         self._build_toolbar()
@@ -196,9 +198,11 @@ class App:
 
     def run(self) -> None:
         while True:
+            dt = self.clock.tick(FPS) / 1000.0  # Calculate delta time in seconds
+            self.global_time += dt              # Update global time for shaders
+
             self._handle_events()
             self._draw()
-            self.clock.tick(FPS)
 
     # ── Event handling ─────────────────────────────────────────────────────
 
@@ -553,8 +557,8 @@ class App:
                 elif pos == grid.goal:
                     self._draw_center_label(x, y, 'G')
 
-    @staticmethod
     def _cell_color(
+        self,
         state: AlgState,
         pos: tuple[int, int],
         base: tuple[int, int, int],
@@ -562,7 +566,12 @@ class App:
     ) -> tuple[int, int, int]:
         """Priority: PATH > CURRENT > CLOSED > OPEN > terrain."""
         if pos in path_set:
-            return C_PATH
+            from constants import PULSE_SPEED, C_PATH_GLOW
+            pulse = (math.sin(self.global_time * PULSE_SPEED) + 1.0) / 2.0
+            r = int(C_PATH[0] + (C_PATH_GLOW[0] - C_PATH[0]) * pulse)
+            g = int(C_PATH[1] + (C_PATH_GLOW[1] - C_PATH[1]) * pulse)
+            b = int(C_PATH[2] + (C_PATH_GLOW[2] - C_PATH[2]) * pulse)
+            return (r, g, b)
         if pos == state.current:
             return C_CURRENT
         if pos in state.expanded:
