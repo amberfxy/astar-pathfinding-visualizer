@@ -1,6 +1,6 @@
-# CS5800 A* Pathfinding Visualizer — Phase 1
+# Interactive A* Pathfinding Puzzle Game
 
-Interactive side-by-side comparison of **Dijkstra**, **A\* (Manhattan)**, and **A\* (Euclidean)** on a weighted 20x20 grid.
+Browser-based interactive side-by-side comparison of **Dijkstra**, **A\* (Manhattan)**, and **A\* (Euclidean)** on a weighted 20x20 grid. The project is implemented in Python/Pygame and includes a packaged web build.
 
 Authors: Jiaxin Jia, Xiaoyuan Lu, Xinyuan Fan
 
@@ -23,18 +23,30 @@ pip install -r requirements.txt
 
 ## Running
 
+### Browser-Based Web Build
+
+```bash
+open build/web/index.html
+```
+
+The repository includes a packaged web version in `build/web/`.
+
+### Local Python Run
+
 ```bash
 python main.py
 ```
 
-A 1380x820 window opens showing three algorithm panels side by side.
+A 1380x858 window opens showing three algorithm panels side by side in the local Pygame version.
 
 ## How to Use (Demo Guide)
 
 ### Map Editing
-- **Brush toolbar (top row):** Select Wall, Empty, Grass (cost 2), Swamp (cost 5), Start, or Goal.
+- **Brush toolbar (top row):** Select Wall, Empty, Grass (cost 2), Swamp (cost 5), Start, Goal, or Predict Path.
 - **Left-click / drag** on any panel's grid to paint with the selected brush.
 - **Right-click / drag** to erase (set cell to Empty).
+- **Wall-limited mechanic:** The current implementation allows up to 5 placed wall cells at a time.
+- **Predict Path mode:** Paint a predicted route to compare your predicted cost with the algorithm's path cost.
 - **Preset maps:** Click Maze, Barrier, or Random for pre-built scenarios. Random generates a new layout each time.
 
 ### Running Algorithms
@@ -67,7 +79,7 @@ Every completed run appends results to `metrics_log.csv` in the working director
 | nodes_expanded | Number of nodes expanded |
 | path_cost | Total path cost (0.0 if no path) |
 | path_length | Number of cells in path (0 if no path) |
-| runtime_ms | Wall-clock runtime in milliseconds |
+| runtime_ms | Runtime in milliseconds as recorded by the current search implementation; this value is environment-sensitive |
 | found | Whether a path was found |
 
 ## Project Structure

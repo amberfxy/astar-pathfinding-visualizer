@@ -1,6 +1,5 @@
 """
-CS5800 Final Project — Phase 1
-Interactive A* Pathfinding Visualizer
+Interactive A* Pathfinding Puzzle Game
 
 Three side-by-side panels visualise Dijkstra, A* (Manhattan), and
 A* (Euclidean) expanding nodes step-by-step on the same weighted grid.
@@ -200,7 +199,7 @@ class App:
     def __init__(self) -> None:
         pygame.init()
         pygame.display.set_caption(
-            'CS5800  ·  A* Pathfinding Visualizer  ·  Phase 1'
+            'CS5800  ·  Interactive A* Pathfinding Puzzle Game'
         )
         self.screen = pygame.display.set_mode((WIN_W, WIN_H))
         self.clock  = pygame.time.Clock()
