@@ -7,7 +7,7 @@
 
 ## Abstract
 
-This project builds an interactive visualizer to compare Dijkstra, A* with Manhattan distance, and A* with Euclidean distance on the same weighted 20x20 grid. The repository includes both a local Pygame version in `pygame_app/` and a browser version that can be served directly from the repository root. Users can paint walls and weighted terrain, move the start and goal, and watch all three algorithms run side by side. The main goal is to study how admissible heuristics affect search efficiency while still preserving optimality on a 4-direction weighted grid. The local Pygame version records nodes expanded, path cost, path length, runtime, and whether a path was found in `project_data/metrics_log.csv`, while the browser version shows the same comparison metrics on screen. In a representative barrier benchmark, all three algorithms reached the same path cost of 25.0, but they explored the grid differently: A* Manhattan expanded 183 nodes, A* Euclidean expanded 233 nodes, and Dijkstra expanded 368 nodes. This result, which is also shown on the project poster, helps answer our main question: different admissible heuristic functions can lead to different search behavior and different efficiency, even when the final path cost is the same.
+This project builds an interactive visualizer to compare Dijkstra, A* with Manhattan distance, and A* with Euclidean distance on the same weighted 20x20 grid. The repository includes both a local Pygame version in `pygame_app/` and a browser version that can be served directly from the repository root. Users can paint walls and weighted terrain, move the start and goal, and watch all three algorithms run side by side. The main goal is to study how admissible heuristics affect search efficiency while still preserving optimality on a 4-direction weighted grid. The local Pygame version records nodes expanded, path cost, path length, runtime, and whether a path was found in `project_data/metrics_log.csv`, while the browser version shows the same comparison metrics on screen. In a representative barrier benchmark, all three algorithms reached the same path cost of 25.0, but they explored the grid differently: A* Manhattan expanded 183 nodes, A* Euclidean expanded 233 nodes, and Dijkstra expanded 368 nodes. This result helps answer our main question: different admissible heuristic functions can lead to different search behavior and different efficiency, even when the final path cost is the same.
 
 ## Introduction
 
@@ -158,9 +158,9 @@ The project also uses standard mathematical and drawing utilities such as `math.
 
 ### Results and Testing
 
-The current evaluation evidence comes from the benchmark summarized on the poster, the logged CSV runs from the local Pygame version, the test scenarios built into the visualizer, and a final consistency check against the current codebase. We do **not** claim a large fully automated experiment pipeline in this report because that is not part of the current evidence set.
+The current evaluation evidence comes from representative benchmark runs in the local Pygame version, the logged CSV output, the test scenarios built into the visualizer, and a final consistency check against the current codebase. We do **not** claim a large fully automated experiment pipeline in this report because that is not part of the current evidence set.
 
-A representative barrier benchmark gives the clearest comparison and matches the current barrier preset in the implementation. This same benchmark is also summarized on the poster. In that run:
+A representative barrier benchmark gives the clearest comparison and matches the current barrier preset in the implementation. In that run:
 
 - Dijkstra expanded 368 nodes
 - A* Manhattan expanded 183 nodes
@@ -182,7 +182,7 @@ The main test scenarios can be summarized more explicitly as inputs and outputs:
 | Test scenario | Input | Observed output | Why it matters |
 |---|---|---|---|
 | Empty grid | 20x20 grid with no blocking walls and the same start/goal given to all three algorithms | All algorithms find a path and provide a clean baseline for expansion behavior | Confirms the implementation works in the simplest reachable case |
-| Barrier preset | Weighted grid with a forced detour; same map used in the poster benchmark | Dijkstra 368 expansions, A* Manhattan 183, A* Euclidean 233, with common path cost 25.0 | Serves as the clearest comparative benchmark for efficiency under the same input |
+| Barrier preset | Weighted grid with a forced detour using the current barrier preset | Dijkstra 368 expansions, A* Manhattan 183, A* Euclidean 233, with common path cost 25.0 | Serves as the clearest comparative benchmark for efficiency under the same input |
 | No-path case | Goal region manually blocked so no legal path exists | All algorithms terminate with `found = False` rather than looping or returning a false solution | Confirms correct failure behavior |
 | Random seed 42 | Current random map generated from the implementation's seeded configuration | Common path cost 34.0 with 201, 110, and 147 expansions, while path length differs for A* Euclidean | Shows why path cost is a stronger correctness metric than path length on weighted terrain |
 
@@ -198,7 +198,7 @@ GenAI was most useful when we were narrowing the project from a broad idea into 
 
 A conservative description for the final submission is:
 
-> We used GenAI primarily as a planning and writing assistant. It helped refine our project framing, clarify our experimental goals, improve pseudocode structure, and improve how we explained the methodology and deliverables. The final implementation, algorithm behavior, and project-specific deliverables were still based on our own code, poster, and analysis.
+> We used GenAI primarily as a planning and writing assistant. It helped refine our project framing, clarify our experimental goals, improve pseudocode structure, and improve how we explained the methodology and deliverables. The final implementation, algorithm behavior, and project-specific deliverables were still based on our own code and analysis.
 
 This report should be paired with the reconstructed GenAI appendix prepared for the submission set. That appendix is described as reconstructed from team recollection rather than presented as a raw exported chat log.
 
