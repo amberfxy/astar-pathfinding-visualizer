@@ -7,13 +7,13 @@
 
 ## Abstract
 
-This project implements a browser-based interactive visualizer for comparing Dijkstra, A* with Manhattan distance, and A* with Euclidean distance on the same weighted 20x20 grid. Users can paint walls and weighted terrain, reposition the start and goal, and watch all three algorithms run side by side. The main goal is to study how admissible heuristics affect search efficiency while preserving optimality on a 4-direction weighted grid. The system records nodes expanded, path cost, path length, runtime, and whether a path is found. In the benchmark already used on the project poster, which matches the current barrier preset, all three algorithms reached path cost 25.0 while A* Manhattan expanded 183 nodes, A* Euclidean expanded 233 nodes, and Dijkstra expanded 368 nodes. These results support the project’s main claim: admissible heuristics can preserve optimal-cost solutions while reducing search effort on the same input.
+This project implements an interactive visualizer for comparing Dijkstra, A* with Manhattan distance, and A* with Euclidean distance on the same weighted 20x20 grid. The current repository includes both a local Pygame implementation and a browser-facing custom mode that can be served directly from the repository root as a static site. Users can paint walls and weighted terrain, reposition the start and goal, and watch all three algorithms run side by side. The main goal is to study how admissible heuristics affect search efficiency while preserving optimality on a 4-direction weighted grid. The local Pygame version records nodes expanded, path cost, path length, runtime, and whether a path is found in `metrics_log.csv`, while the browser custom mode displays the same comparison metrics on screen. In the benchmark already used on the project poster, which matches the current barrier preset in the Python implementation, all three algorithms reached path cost 25.0 while A* Manhattan expanded 183 nodes, A* Euclidean expanded 233 nodes, and Dijkstra expanded 368 nodes. These results support the project’s main claim: admissible heuristics can preserve optimal-cost solutions while reducing search effort on the same input.
 
 ## Introduction
 
 This project studies how heuristic choice affects the behavior of A* search in a weighted grid environment while preserving optimality. In many algorithms courses, students learn shortest-path methods through pseudocode and proofs, but it is much harder to build intuition for how the search frontier actually evolves from one step to the next. A* is a particularly useful case study because its correctness depends on a clear relationship between path cost and heuristic estimates, yet its practical efficiency can change significantly depending on the heuristic being used.
 
-To make this behavior easier to observe, we built an interactive pathfinding visualizer with lightweight puzzle-game elements. The system allows a user to paint walls and weighted terrain, move the start and goal, and then run Dijkstra, A* with Manhattan distance, and A* with Euclidean distance on the same grid at the same time. This shared-input setting makes it possible to compare expansion behavior, path cost, and other metrics directly instead of relying only on static pseudocode examples. The project is implemented in Python/Pygame and delivered through a browser-based web build.
+To make this behavior easier to observe, we built an interactive pathfinding visualizer with lightweight puzzle-game elements. The system allows a user to paint walls and weighted terrain, move the start and goal, and then run Dijkstra, A* with Manhattan distance, and A* with Euclidean distance on the same grid at the same time. This shared-input setting makes it possible to compare expansion behavior, path cost, and other metrics directly instead of relying only on static pseudocode examples. The current repository now contains both a local Pygame version and a browser-facing custom mode built around the same comparison idea.
 
 Our central question is: **How do different admissible heuristics affect A* search efficiency on a weighted 4-direction grid while preserving optimality?** In our implementation, efficiency is primarily measured by nodes expanded, while correctness is checked using path cost on the same terrain configuration.
 
@@ -52,7 +52,9 @@ The generator design is important for the methodology because the goal of the pr
 
 Under the current 4-direction, nonnegative-cost grid model, both Manhattan distance and Euclidean distance are admissible heuristics. This lets the project compare efficiency differences while preserving optimality of path cost on the same input.
 
-The interface is implemented in Pygame as a three-panel visualizer and packaged into a browser-usable web build. Each panel corresponds to one algorithm. Users can paint terrain directly on the grid, use preset maps, run all three algorithms simultaneously, pause, step through the search, and toggle `f(n)` overlays. The interface also includes two puzzle-style mechanics already present in the implementation: a wall-limited mode that allows up to five placed wall cells at a time and a path-prediction mode that compares a user’s predicted cost to the algorithm’s actual path cost.
+The repository currently provides two interfaces for this comparison task. The local version is implemented in Pygame as a three-panel visualizer. The browser-facing version is launched from `index.html` and uses the JavaScript files in `src/`, especially `src/states/customState.js`, to reproduce the same three-panel comparison idea in the browser. This browser entry is static-hosting friendly and can be published directly through GitHub Pages. In both interfaces, each panel corresponds to one algorithm, and the user can paint terrain directly on the grid, use preset maps, run all three algorithms simultaneously, pause, step through the search, and toggle `f(n)` overlays.
+
+The local Pygame version also includes two puzzle-style mechanics already present in the implementation: a wall-limited mode that allows up to five placed wall cells at a time and a path-prediction mode that compares a user’s predicted cost to the algorithm’s actual path cost. The browser custom mode focuses on the core visual comparison and on-screen metrics rather than reproducing every local feature exactly.
 
 ### Inputs and Outputs
 
@@ -72,7 +74,7 @@ The system produces the following outputs for each algorithm:
 - Whether a path was found
 - A visual trace of open-set, closed-set, current-node, and final-path behavior
 
-These results are also appended to `metrics_log.csv`, which makes it possible to compare runs after the demo finishes. In the final analysis, path cost is treated as the main correctness metric, while runtime is treated more cautiously because it is environment-sensitive.
+In the local Pygame version, these results are also appended to `metrics_log.csv`, which makes it possible to compare runs after the demo finishes. In the browser custom mode, the metrics are displayed on screen but are not written to the CSV file. In the final analysis, path cost is treated as the main correctness metric, while runtime is treated more cautiously because it is environment-sensitive.
 
 ### Pseudocode
 
@@ -132,7 +134,7 @@ The search uses a min-heap priority queue for the open set. Under the standard g
 
 ### Results and Testing
 
-The current evaluation evidence comes from the poster benchmark, the logged CSV runs, the implemented test scenarios in the visualizer, and a final consistency check against the current codebase. We do **not** claim a fully automated large-scale experiment pipeline in this report because that is not part of the current evidence set.
+The current evaluation evidence comes from the poster benchmark, the logged CSV runs from the local Pygame version, the implemented test scenarios in the visualizer, and a final consistency check against the current codebase. We do **not** claim a fully automated large-scale experiment pipeline in this report because that is not part of the current evidence set.
 
 The clearest benchmark already used in the project materials is the benchmark shown on the poster, which matches the current barrier preset configuration in the implementation. In that run:
 
@@ -150,6 +152,8 @@ The current materials also support additional functional scenarios and consisten
 - A barrier map that forces a detour
 - A no-path case in which the goal is blocked and the algorithm terminates with `found = False`
 - Repeated reruns of the barrier, maze, and random-seed maps to confirm stable node-expansion and path-cost values on the current implementation
+
+Fresh reruns against the current Python implementation confirm that the barrier preset still produces the poster benchmark values. They also confirm that the current maze preset produces path cost 21.0 with node expansions 274, 53, and 64 for Dijkstra, A* Manhattan, and A* Euclidean respectively. For the current random map with seed 42, the rerun values are 201, 110, and 147 expanded nodes with common path cost 34.0, while path length differs for A* Euclidean. This is another reason to treat path cost rather than path length as the main correctness metric on a weighted grid.
 
 For a weighted-grid project, path cost is the most important correctness metric. Path length can still be reported, but it should be treated as secondary because multiple optimal paths can have the same total cost while using different numbers of cells. For that reason, our interpretation of correctness focuses primarily on whether the compared algorithms reach the same optimal-cost solution on the same map. Runtime is recorded by the system, but this report does not use runtime as a headline result.
 
@@ -182,6 +186,8 @@ The current implementation has several limitations:
 - Only three search modes are implemented in the comparison view.
 - The current evidence focuses on representative logged runs rather than a large automated experiment suite.
 - The report currently relies on existing logged data rather than a newly generated clean experimental dataset.
+- Feature parity between the browser custom mode and the local Pygame version is not complete.
+- A public GitHub Pages URL still depends on repository settings outside the codebase, even though the root browser entry is now static-hosting ready.
 
 These limitations suggest several directions for future work:
 

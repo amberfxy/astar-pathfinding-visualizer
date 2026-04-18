@@ -1,5 +1,5 @@
 /**
- * customState.js — Custom Mode: A* Pathfinding Visualizer
+ * customState.js — Custom Mode: Interactive A* Pathfinding Puzzle Game
  * Side-by-side comparison of Dijkstra, A* Manhattan, A* Euclidean
  * on an interactive 20×20 weighted grid.
  *
@@ -580,7 +580,7 @@ export function createCustomState(ctx, goTo) {
         ctx.fillStyle    = 'rgba(255,255,255,0.92)';
         ctx.textAlign    = 'right';
         ctx.textBaseline = 'middle';
-        ctx.fillText('A* Pathfinding Visualizer  ·  CS5800', 1088, 39);
+        ctx.fillText('Interactive A* Pathfinding Puzzle Game', 1088, 39);
 
         // Subtle divider dots between button groups in Row 1
         ctx.fillStyle = 'rgba(255,255,255,0.25)';

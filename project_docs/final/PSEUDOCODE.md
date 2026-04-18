@@ -101,6 +101,7 @@ AStarEuclidean(grid) = SearchGenerator(grid, EuclideanHeuristic)
 
 ## Notes
 
+- The same high-level search structure is reflected in both the local Python implementation and the browser custom mode served from `index.html`.
 - The grid is weighted and 4-directional.
 - Correctness should be evaluated primarily by `path cost`, not only by `path length`.
 - Dijkstra is included as the uninformed baseline by setting `h(n) = 0`.

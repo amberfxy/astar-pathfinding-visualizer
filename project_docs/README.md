@@ -2,7 +2,14 @@
 
 This folder keeps team-facing writing and submission-prep material out of the repo root.
 
-We intentionally use `project_docs/` instead of `docs/` so the repository can still use `docs/` later for GitHub Pages deployment if needed.
+We intentionally use `project_docs/` instead of `docs/` so the submission documents stay separate from the browser-facing static files. The current GitHub Pages-ready browser entry lives at the repository root in `index.html`.
+
+The current GitHub version of the repository includes both:
+
+- the original local Pygame comparison tool in `main.py`
+- a browser-facing custom mode in `index.html` and `src/`
+
+The browser entry is now rooted at `index.html` so the repository can be published directly through GitHub Pages without introducing a separate static-site copy of the web files.
 
 ## final
 
@@ -15,6 +22,15 @@ Files in `project_docs/final/` are the polished deliverable drafts that are most
 
 ## internal
 
-The team may also keep a local `project_docs/internal/` folder for working notes and audit artifacts used during submission prep.
+Files in `project_docs/internal/` are working notes and audit artifacts used during submission prep.
 
-Those files are useful for coordination, but they are not core project deliverables by themselves and do not need to be committed with the main submission-oriented update.
+They are useful for coordination, consistency checks, and deployment planning, but they are not the core project deliverables by themselves.
+
+Current internal notes:
+
+- `CONSISTENCY_AUDIT.md`
+- `FINAL_DELIVERABLES_CHECKLIST.md`
+- `HEADLESS_VALIDATION_RESULTS.md`
+- `GAMMA_SLIDES_PROMPT.md`
+- `GENAI_APPENDIX_TEMPLATE.md`
+- `GITHUB_PAGES_SETUP.md`

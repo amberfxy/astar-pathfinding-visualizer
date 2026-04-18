@@ -1,6 +1,11 @@
 # Interactive A* Pathfinding Puzzle Game
 
-Browser-based interactive side-by-side comparison of **Dijkstra**, **A\* (Manhattan)**, and **A\* (Euclidean)** on a weighted 20x20 grid. The project is implemented in Python/Pygame and includes a packaged web build.
+Interactive side-by-side comparison of **Dijkstra**, **A\* (Manhattan)**, and **A\* (Euclidean)** on a weighted 20x20 grid.
+
+The current repository contains two user-facing interfaces for the same comparison task:
+
+- A **browser custom mode** launched from `index.html` and implemented with the web files in `src/`
+- A **local Pygame version** launched from `main.py`
 
 Authors: Jiaxin Jia, Xiaoyuan Lu, Xinyuan Fan
 
@@ -23,23 +28,58 @@ pip install -r requirements.txt
 
 ## Running
 
-### Browser-Based Web Build
+### Browser Custom Mode
 
 ```bash
-open build/web/index.html
+python3 -m http.server 8000
 ```
 
-The repository includes a packaged web version in `build/web/`.
+Then open:
+
+- [http://localhost:8000/](http://localhost:8000/)
+
+This mode uses browser-side JavaScript modules from `src/`, so a local static server is the safest way to run it.
+
+`index.html` is also the repository's GitHub Pages entry point. If GitHub Pages is enabled for the repository root, the browser version can be published directly as a static site. The older `game.html` path is kept as a redirect to the same browser interface.
 
 ### Local Python Run
 
 ```bash
-python main.py
+python3 main.py
 ```
 
 A 1380x858 window opens showing three algorithm panels side by side in the local Pygame version.
 
-## How to Use (Demo Guide)
+## Feature Summary
+
+### Shared Across Both Interfaces
+
+- Weighted 20x20 grid
+- Three simultaneous algorithm panels:
+  - Dijkstra
+  - A* Manhattan
+  - A* Euclidean
+- Terrain painting with Wall, Grass, and Swamp
+- Repositionable start and goal
+- Preset maps: Maze, Barrier, Random
+- Run / Pause / Step controls
+- Speed controls
+- `f(n)` overlays
+- On-screen comparison metrics
+
+### Local Pygame Version Only
+
+- CSV logging to `metrics_log.csv`
+- Wall-limited mechanic with up to 5 placed wall cells at a time
+- Predict-path cost feedback in the panel footer
+
+### Browser Custom Mode Notes
+
+- The browser custom mode focuses on the core side-by-side comparison interface
+- It is now structured so the root `index.html` can be served directly by GitHub Pages
+- It displays metrics on screen but does **not** append runs to `metrics_log.csv`
+
+## Local Pygame Demo Guide
 
 ### Map Editing
 - **Brush toolbar (top row):** Select Wall, Empty, Grass (cost 2), Swamp (cost 5), Start, Goal, or Predict Path.
@@ -68,7 +108,7 @@ A 1380x858 window opens showing three algorithm panels side by side in the local
 
 ## Metric Logging
 
-Every completed run appends results to `metrics_log.csv` in the working directory. Fields:
+In the **local Pygame version**, every completed run appends results to `metrics_log.csv` in the working directory. Fields:
 
 | Column | Description |
 |---|---|
@@ -85,10 +125,14 @@ Every completed run appends results to `metrics_log.csv` in the working director
 ## Project Structure
 
 ```
-main.py          — Pygame UI, event loop, rendering
-algorithms.py    — Dijkstra and A* generators (min-heap priority queue)
-grid.py          — Weighted grid model, terrain types, preset maps
-constants.py     — Layout, colors, terrain costs, configuration
-logger.py        — CSV metrics logging
-requirements.txt — Python dependencies
+main.py                  — Local Pygame UI, event loop, rendering
+algorithms.py            — Python Dijkstra and A* generators
+grid.py                  — Weighted grid model, terrain types, preset maps
+constants.py             — Layout, colors, terrain costs, configuration
+logger.py                — CSV metrics logging for the local version
+index.html               — Root browser entry point for static hosting / GitHub Pages
+game.html                — Legacy redirect to the root browser entry point
+src/states/customState.js — Browser-side three-panel custom mode
+src/utils.js             — Shared browser-side utilities, including MinHeap
+requirements.txt         — Python dependencies
 ```

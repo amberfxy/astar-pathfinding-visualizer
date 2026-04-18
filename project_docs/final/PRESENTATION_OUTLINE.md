@@ -20,6 +20,11 @@
 ## Slide 3 - Problem Setup
 
 - 20x20 weighted grid
+- Inputs:
+  - terrain configuration
+  - start and goal positions
+  - preset map choice
+  - optional user-predicted path
 - Terrain types:
   - empty = 1
   - grass = 2
@@ -47,13 +52,16 @@
 
 - Show the poster screenshot or a live demo
 - Explain:
-  - browser-based delivery through the web build
+  - browser-facing custom mode launched from `index.html`
+  - GitHub Pages can serve this root browser entry directly
+  - local Pygame version launched from `main.py`
   - terrain painting
   - moving start and goal
   - preset maps
   - run / pause / step
   - `f(n)` overlay
-  - metrics logging
+  - on-screen comparison metrics
+  - note that CSV logging belongs to the local Pygame version
 
 ## Slide 6 - Results
 
@@ -72,6 +80,8 @@
 - Barrier map: tests forced detours
 - No-path case: tests correct termination with `found = False`
 - Weighted terrain: tests whether algorithms account for traversal cost correctly
+- Testing method:
+  - we run all three algorithms on identical grids and compare path cost, nodes expanded, and termination behavior
 - Important note:
   - for a weighted grid, `path cost` is the primary correctness metric
 
@@ -105,6 +115,8 @@
 ## Speaker Notes
 
 - Do not turn the presentation into a code walkthrough.
+- Mention that the submitted materials include both source code and standalone pseudocode.
 - When discussing correctness, emphasize `path cost` over `path length`.
 - If you mention the benchmark source, describe it as the `poster benchmark` or the `barrier preset benchmark`.
+- If you mention repository structure, note that the current GitHub version contains both a browser custom mode and a local Pygame version.
 - Avoid unsupported claims such as user-study evidence or a full survey of existing tools unless you can show them.
