@@ -7,17 +7,17 @@
 
 ## Abstract
 
-This project implements an interactive visualizer for comparing Dijkstra, A* with Manhattan distance, and A* with Euclidean distance on the same weighted 20x20 grid. The current repository includes both a local Pygame implementation in `pygame_app/` and a browser-facing custom mode that can be served directly from the repository root as a static site. Users can paint walls and weighted terrain, reposition the start and goal, and watch all three algorithms run side by side. The main goal is to study how admissible heuristics affect search efficiency while preserving optimality on a 4-direction weighted grid. The local Pygame version records nodes expanded, path cost, path length, runtime, and whether a path is found in `project_data/metrics_log.csv`, while the browser custom mode displays the same comparison metrics on screen. In a representative barrier benchmark, all three algorithms reached the same path cost of 25.0, but their search effort differed substantially: A* Manhattan expanded 183 nodes, A* Euclidean expanded 233 nodes, and Dijkstra expanded 368 nodes. This benchmark, which is also summarized on the project poster, supports the project’s central question by showing that different admissible heuristic functions can lead to different search behavior and different levels of efficiency even when the final path cost remains optimal.
+This project builds an interactive visualizer to compare Dijkstra, A* with Manhattan distance, and A* with Euclidean distance on the same weighted 20x20 grid. The repository includes both a local Pygame version in `pygame_app/` and a browser version that can be served directly from the repository root. Users can paint walls and weighted terrain, move the start and goal, and watch all three algorithms run side by side. The main goal is to study how admissible heuristics affect search efficiency while still preserving optimality on a 4-direction weighted grid. The local Pygame version records nodes expanded, path cost, path length, runtime, and whether a path was found in `project_data/metrics_log.csv`, while the browser version shows the same comparison metrics on screen. In a representative barrier benchmark, all three algorithms reached the same path cost of 25.0, but they explored the grid differently: A* Manhattan expanded 183 nodes, A* Euclidean expanded 233 nodes, and Dijkstra expanded 368 nodes. This result, which is also shown on the project poster, helps answer our main question: different admissible heuristic functions can lead to different search behavior and different efficiency, even when the final path cost is the same.
 
 ## Introduction
 
-This project studies how heuristic choice affects the behavior of A* search in a weighted grid environment while preserving optimality. In many algorithms courses, students learn shortest-path methods through pseudocode and proofs, but it is much harder to build intuition for how the search frontier actually evolves from one step to the next. A* is a particularly useful case study because its correctness depends on a clear relationship between path cost and heuristic estimates, yet its practical efficiency can change significantly depending on the heuristic being used.
+This project studies how heuristic choice affects A* search on a weighted grid while still preserving optimality. In many algorithms classes, students learn shortest-path algorithms through pseudocode and proofs, but it is harder to build intuition for how the search frontier actually grows step by step. A* is a useful case because its correctness depends on the relationship between path cost and heuristic estimates, while its efficiency can change a lot depending on which heuristic is used.
 
-To make this behavior easier to observe, we built an interactive pathfinding visualizer with lightweight puzzle-game elements. The system allows a user to paint walls and weighted terrain, move the start and goal, and then run Dijkstra, A* with Manhattan distance, and A* with Euclidean distance on the same grid at the same time. This shared-input setting makes it possible to compare expansion behavior, path cost, and other metrics directly instead of relying only on static pseudocode examples. The current repository now contains both a local Pygame version and a browser-facing custom mode built around the same comparison idea.
+To make this behavior easier to see, we built an interactive pathfinding visualizer with light puzzle-game elements. The system lets a user paint walls and weighted terrain, move the start and goal, and then run Dijkstra, A* with Manhattan distance, and A* with Euclidean distance on the same grid at the same time. Because all three algorithms use the same input, we can compare expansion behavior, path cost, and other metrics directly instead of relying only on static pseudocode examples. The current repository includes both a local Pygame version and a browser version built around the same comparison idea.
 
 Our central question is: **How do different admissible heuristics affect A* search efficiency on a weighted 4-direction grid while preserving optimality?** In our implementation, efficiency is primarily measured by nodes expanded, while correctness is checked using path cost on the same terrain configuration.
 
-We chose this topic because it connects core shortest-path concepts from class to a concrete visual system. The project also gave us a way to combine algorithm design, interactive visualization, and evidence-based comparison in one deliverable. Rather than presenting A* only as an abstract formula, we wanted to show how the search actually behaves under different heuristics and map configurations.
+We chose this topic because it connects shortest-path ideas from class to something concrete and visible. It also gave us a way to combine algorithm design, visualization, and result comparison in one project. Instead of showing A* only as an abstract formula, we wanted to show how the search actually behaves under different heuristics and map setups.
 
 ## Technical Discussion and Analysis
 
@@ -34,19 +34,19 @@ The user can place weighted terrain, reposition the start and goal, and choose f
 
 ### Development Steps
 
-We approached the project in a sequence of concrete implementation steps. First, we modeled the weighted grid and its terrain-dependent traversal costs. Second, we implemented a shared search framework that could run Dijkstra and multiple A* heuristic variants on the same input. Third, we added a side-by-side visualization so that the search process could be observed rather than only measured after termination. Fourth, we added interaction features such as terrain painting, preset maps, start/goal repositioning, and step-through controls. Finally, we logged run results to a CSV file so that representative runs could be compared outside the live demo.
+We built the project in a clear sequence. First, we modeled the weighted grid and its terrain costs. Second, we implemented a shared search framework that could run Dijkstra and multiple A* heuristics on the same input. Third, we added a side-by-side visualization so that the search process could be seen, not just measured at the end. Fourth, we added interaction features such as terrain painting, preset maps, start/goal movement, and step-through controls. Finally, we logged run results to a CSV file so that representative runs could be compared outside the live demo.
 
-This sequence matters because the final project is not only an algorithm implementation; it is also a comparison environment. The visualization and logging layers are therefore part of the methodology rather than just presentation details.
+This sequence matters because the project is not only an algorithm implementation. It is also a comparison environment. Because of that, the visualization and logging layers are part of the methodology, not just presentation details.
 
 ### Implementation Iterations
 
-The project also evolved through several implementation iterations that improved clarity, reproducibility, and presentation quality.
+The project also went through several iterations that improved clarity, reproducibility, and presentation quality.
 
-**Iteration 1: Core weighted-grid search comparison.** We first implemented the weighted grid model, the terrain-cost system, and the shared generator-based search framework for Dijkstra, A* Manhattan, and A* Euclidean. The goal of this stage was to ensure that all three algorithms could be run on the same input and compared fairly using the same movement model and cost definition.
+**Iteration 1: Core weighted-grid search comparison.** We first implemented the weighted grid model, the terrain-cost system, and the shared generator-based search framework for Dijkstra, A* Manhattan, and A* Euclidean. The goal at this stage was to make sure all three algorithms could run on the same input and be compared fairly under the same movement model and cost definition.
 
-**Iteration 2: Interactive comparison environment.** After the baseline search logic was working, we added the synchronized three-panel visualizer, terrain editing, preset maps, and run/pause/step controls. The goal of this stage was to make the search process observable so that heuristic behavior could be interpreted visually rather than only through final path output.
+**Iteration 2: Interactive comparison environment.** After the baseline search logic was working, we added the synchronized three-panel visualizer, terrain editing, preset maps, and run/pause/step controls. The goal here was to make the search process visible so that heuristic behavior could be understood visually instead of only through the final path.
 
-**Iteration 3: Logging, browser access, and presentation refinement.** Finally, we added metric logging for the local Pygame version, prepared a browser-facing version rooted at `index.html`, and aligned the project structure and interface wording for presentation and submission. The goal of this stage was to make the project easier to validate, easier to demonstrate, and more suitable for a final report and oral presentation.
+**Iteration 3: Logging, browser access, and presentation refinement.** Finally, we added metric logging for the local Pygame version, prepared a browser version rooted at `index.html`, and aligned the project structure and interface wording for presentation and submission. The goal here was to make the project easier to validate, easier to demonstrate, and better suited for the final report and presentation.
 
 ### Methodology and Implementation
 
@@ -56,15 +56,15 @@ The implementation compares three algorithms:
 - A* with Manhattan distance
 - A* with Euclidean distance
 
-The search core is implemented as a unified generator-based framework. Dijkstra serves as the uninformed baseline and is implemented as A* with `h(n)=0`. Each search keeps a min-heap open set, a closed set, `g` values, `f` values, and predecessor pointers for path reconstruction. After each node expansion, the algorithm yields a state snapshot so the user interface can render the current frontier, expanded nodes, and score values step by step. This structure makes the comparison visual and synchronized across all three algorithms.
+The search core is implemented as one generator-based framework. Dijkstra is the uninformed baseline and is implemented as A* with `h(n)=0`. Each search keeps a min-heap open set, a closed set, `g` values, `f` values, and predecessor pointers for path reconstruction. After each node expansion, the algorithm yields a state snapshot so the interface can render the current frontier, expanded nodes, and score values step by step. This structure makes the comparison visual and synchronized across all three algorithms.
 
-The generator design is important for the methodology because the goal of the project is not only to compute a shortest path, but also to make the search process observable. By yielding the intermediate state after each expansion, the visualizer can show how the heuristic changes the order in which nodes are explored. This is one of the main ways the system turns algorithm behavior into something easier to interpret.
+The generator design matters because the goal of the project is not only to compute a shortest path, but also to show the search process. By yielding the intermediate state after each expansion, the visualizer can show how the heuristic changes the order in which nodes are explored. This is one of the main ways the system makes algorithm behavior easier to understand.
 
-Under the current 4-direction, nonnegative-cost grid model, both Manhattan distance and Euclidean distance are admissible heuristics. This lets the project compare efficiency differences while preserving optimality of path cost on the same input.
+Under the current 4-direction, nonnegative-cost grid model, both Manhattan distance and Euclidean distance are admissible heuristics. This lets us compare efficiency differences while still preserving optimal path cost on the same input.
 
-The repository currently provides two interfaces for this comparison task. The local version is implemented in Pygame as a three-panel visualizer under `pygame_app/`. The browser-facing version is launched from `index.html` and uses the JavaScript files in `src/`, especially `src/states/customState.js`, to reproduce the same three-panel comparison idea in the browser. This browser entry is static-hosting friendly and is designed for direct GitHub Pages hosting from the repository root. In both interfaces, each panel corresponds to one algorithm, and the user can paint terrain directly on the grid, use preset maps, run all three algorithms simultaneously, pause, step through the search, and toggle `f(n)` overlays.
+The repository currently provides two interfaces for this comparison task. The local version is implemented in Pygame as a three-panel visualizer under `pygame_app/`. The browser version is launched from `index.html` and uses the JavaScript files in `src/`, especially `src/states/customState.js`, to reproduce the same three-panel comparison idea in the browser. This browser entry is static-hosting friendly and is designed for direct GitHub Pages hosting from the repository root. In both interfaces, each panel corresponds to one algorithm, and the user can paint terrain on the grid, use preset maps, run all three algorithms at the same time, pause, step through the search, and toggle `f(n)` overlays.
 
-The local Pygame version also includes two puzzle-style mechanics already present in the implementation: a wall-limited mode that allows up to five placed wall cells at a time and a path-prediction mode that compares a user’s predicted cost to the algorithm’s actual path cost. The browser custom mode focuses on the core visual comparison and on-screen metrics rather than reproducing every local feature exactly.
+The local Pygame version also includes two puzzle-style mechanics already present in the implementation: a wall-limited mode that allows up to five placed wall cells at a time and a path-prediction mode that compares a user's predicted cost to the algorithm's actual path cost. The browser version focuses on the core visual comparison and on-screen metrics rather than matching every local feature exactly.
 
 ### Inputs and Outputs
 
@@ -84,7 +84,7 @@ The system produces the following outputs for each algorithm:
 - Whether a path was found
 - A visual trace of open-set, closed-set, current-node, and final-path behavior
 
-In the local Pygame version, these results are also appended to `project_data/metrics_log.csv`, which makes it possible to compare runs after the demo finishes. In the browser custom mode, the metrics are displayed on screen but are not written to the CSV file. In the final analysis, path cost is treated as the main correctness metric, while runtime is treated more cautiously because it is environment-sensitive.
+In the local Pygame version, these results are also appended to `project_data/metrics_log.csv`, which makes it possible to compare runs after the demo finishes. In the browser version, the metrics are shown on screen but are not written to the CSV file. In our analysis, path cost is the main correctness metric, while runtime is treated more cautiously because it depends on the environment.
 
 ### Pseudocode
 
@@ -158,9 +158,9 @@ The project also uses standard mathematical and drawing utilities such as `math.
 
 ### Results and Testing
 
-The current evaluation evidence comes from the poster benchmark, the logged CSV runs from the local Pygame version, the implemented test scenarios in the visualizer, and a final consistency check against the current codebase. We do **not** claim a fully automated large-scale experiment pipeline in this report because that is not part of the current evidence set.
+The current evaluation evidence comes from the benchmark summarized on the poster, the logged CSV runs from the local Pygame version, the test scenarios built into the visualizer, and a final consistency check against the current codebase. We do **not** claim a large fully automated experiment pipeline in this report because that is not part of the current evidence set.
 
-A representative barrier benchmark, which is also summarized on the poster, provides the clearest comparison and matches the current barrier preset configuration in the implementation. In that run:
+A representative barrier benchmark gives the clearest comparison and matches the current barrier preset in the implementation. This same benchmark is also summarized on the poster. In that run:
 
 - Dijkstra expanded 368 nodes
 - A* Manhattan expanded 183 nodes
@@ -168,7 +168,7 @@ A representative barrier benchmark, which is also summarized on the poster, prov
 - All three recorded path cost 25.0
 - All three recorded path length 26
 
-This benchmark shows the intended comparison clearly: under the same weighted-grid input, both A* heuristics reached an optimal-cost solution while expanding fewer nodes than Dijkstra, and Manhattan expanded fewer nodes than Euclidean in this case.
+This benchmark shows the comparison clearly: on the same weighted-grid input, both A* heuristics reached an optimal-cost solution while expanding fewer nodes than Dijkstra, and Manhattan expanded fewer nodes than Euclidean in this case.
 
 The current materials also support additional functional scenarios and consistency checks:
 
@@ -186,27 +186,27 @@ The main test scenarios can be summarized more explicitly as inputs and outputs:
 | No-path case | Goal region manually blocked so no legal path exists | All algorithms terminate with `found = False` rather than looping or returning a false solution | Confirms correct failure behavior |
 | Random seed 42 | Current random map generated from the implementation's seeded configuration | Common path cost 34.0 with 201, 110, and 147 expansions, while path length differs for A* Euclidean | Shows why path cost is a stronger correctness metric than path length on weighted terrain |
 
-Fresh reruns against the current Python implementation confirm that the barrier preset still produces the poster benchmark values. They also confirm that the current maze preset produces path cost 21.0 with node expansions 274, 53, and 64 for Dijkstra, A* Manhattan, and A* Euclidean respectively. For the current random map with seed 42, the rerun values are 201, 110, and 147 expanded nodes with common path cost 34.0, while path length differs for A* Euclidean. This is another reason to treat path cost rather than path length as the main correctness metric on a weighted grid.
+Fresh reruns against the current Python implementation confirm that the barrier preset still produces the same benchmark values. They also confirm that the current maze preset produces path cost 21.0 with node expansions 274, 53, and 64 for Dijkstra, A* Manhattan, and A* Euclidean. For the current random map with seed 42, the rerun values are 201, 110, and 147 expanded nodes with common path cost 34.0, while path length differs for A* Euclidean. This is another reason to treat path cost, not path length, as the main correctness metric on a weighted grid.
 
-For a weighted-grid project, path cost is the most important correctness metric. Path length can still be reported, but it should be treated as secondary because multiple optimal paths can have the same total cost while using different numbers of cells. For that reason, our interpretation of correctness focuses primarily on whether the compared algorithms reach the same optimal-cost solution on the same map. Runtime is recorded by the system, but this report does not use runtime as a headline result.
+For a weighted-grid project, path cost is the most important correctness metric. Path length can still be reported, but it is secondary because multiple optimal paths can have the same total cost while using different numbers of cells. For that reason, we focus mainly on whether the compared algorithms reach the same optimal-cost solution on the same map. Runtime is recorded by the system, but this report does not use runtime as a main result.
 
 ### Use of GenAI
 
-Based on the current project materials, GenAI was used to support planning and writing rather than to directly produce the finished implementation. The proposal explicitly states that GenAI was used to refine user-interface ideas, experiment design, pseudocode structure, and report organization. The proposal text also records drafting assistance from GPT and summarization assistance from Gemini.
+Based on the current project materials, GenAI was used mainly for planning and writing support rather than to directly produce the final implementation. The proposal states that GenAI was used to refine interface ideas, experiment design, pseudocode structure, and report organization. The proposal text also records drafting help from GPT and summarization help from Gemini.
 
-GenAI was most useful when we were refining the project from a broad idea into a more structured and presentable question. Instead of treating pathfinding only as a generic coding problem, we narrowed the project toward a specific comparison of admissible heuristics on the same weighted 4-direction grid. This refinement helped make the project more open-ended and more suitable for algorithmic analysis, because the final deliverable was not just a single path output but an environment for comparing search behavior and metrics.
+GenAI was most useful when we were narrowing the project from a broad idea into a more focused question. Instead of treating pathfinding only as a general coding problem, we shaped the project into a comparison of admissible heuristics on the same weighted 4-direction grid. This made the project more open-ended and more suitable for algorithmic analysis, because the final deliverable was not just a single path output but an environment for comparing search behavior and metrics.
 
 A conservative description for the final submission is:
 
 > We used GenAI primarily as a planning and writing assistant. It helped refine our project framing, clarify our experimental goals, improve pseudocode structure, and improve how we explained the methodology and deliverables. The final implementation, algorithm behavior, and project-specific deliverables were still based on our own code, poster, and analysis.
 
-This report should be paired with the reconstructed GenAI appendix prepared for the submission set. That appendix is intentionally described as reconstructed from team recollection rather than presented as a raw exported chat log.
+This report should be paired with the reconstructed GenAI appendix prepared for the submission set. That appendix is described as reconstructed from team recollection rather than presented as a raw exported chat log.
 
 ### How Our Solution Differs from Direct GenAI Solutions
 
-This project is not simply a direct GenAI answer to a pathfinding question. A direct GenAI response could explain A* in words or produce a one-time solution for a single input, but our project implements a reusable interactive environment for comparing multiple search strategies on the same weighted grid. The user can construct inputs, observe step-by-step frontier changes in the web interface, and collect quantitative metrics such as path cost and nodes expanded.
+This project is not simply a direct GenAI answer to a pathfinding question. A direct GenAI response could explain A* in words or produce a one-time solution for a single input, but our project builds a reusable interactive environment for comparing multiple search strategies on the same weighted grid. The user can create inputs, observe step-by-step frontier changes in the web interface, and collect quantitative metrics such as path cost and nodes expanded.
 
-The project is also tailored to a specific course goal: understanding heuristic behavior through direct comparison. Instead of asking an AI system to return a path, we created a system that exposes the search process itself. This makes the contribution different from a generic AI-generated answer because the project’s value is in the comparison environment, the visualization, and the structured algorithmic analysis.
+The project is also built around a specific course goal: understanding heuristic behavior through direct comparison. Instead of asking an AI system to return a path, we created a system that shows the search process itself. This makes the project different from a generic AI-generated answer because its value is in the comparison environment, the visualization, and the algorithmic analysis.
 
 We do **not** claim a formal survey of all existing online pathfinding tools in this report. A safer and more accurate claim is that our project provides a custom interactive comparison setting designed specifically for heuristic analysis in CS 5800.
 
@@ -242,9 +242,9 @@ For consistency in the final archived submission, the repository author names sh
 
 ## Conclusion
 
-This project implemented an interactive A* pathfinding visualizer with puzzle-style features to study heuristic efficiency on a weighted 4-direction grid. On the weighted 4-direction grid used in this project, the tested admissible heuristics preserved optimal path cost, and Manhattan was the most efficient heuristic among the ones we evaluated. By running Dijkstra, A* Manhattan, and A* Euclidean on the same user-defined map, the system makes differences in search behavior visible rather than purely theoretical. The current benchmark evidence answers the project’s central question by showing that different admissible heuristic functions can produce different expansion behavior and different levels of efficiency even when they still reach an optimal-cost solution.
+This project implemented an interactive A* pathfinding visualizer with puzzle-style features to study heuristic efficiency on a weighted 4-direction grid. On the weighted 4-direction grid used in this project, the tested admissible heuristics preserved optimal path cost, and Manhattan was the most efficient heuristic among the ones we evaluated. By running Dijkstra, A* Manhattan, and A* Euclidean on the same user-defined map, the system makes differences in search behavior visible instead of leaving them as theory. The current benchmark evidence answers the project’s central question by showing that different admissible heuristic functions can produce different expansion behavior and different levels of efficiency even when they still reach an optimal-cost solution.
 
-The strongest contribution of the project is not only the final path returned by the algorithms, but the side-by-side environment for observing, comparing, and explaining their behavior. By combining a weighted-grid model, synchronized visualization, and logged metrics, the project turns a shortest-path topic from the course into a concrete tool for heuristic analysis. The final result is a project-specific comparison environment rather than a one-time pathfinding answer, which is why the project remains meaningful even in a setting where direct AI-generated solutions already exist.
+The strongest contribution of the project is not only the final path returned by the algorithms, but the side-by-side environment for observing, comparing, and explaining their behavior. By combining a weighted-grid model, synchronized visualization, and logged metrics, the project turns a shortest-path topic from class into a concrete tool for heuristic analysis. The final result is a project-specific comparison environment rather than a one-time pathfinding answer, which is why the project still has value even when direct AI-generated solutions already exist.
 
 ### Individual Reflections
 
