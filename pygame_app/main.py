@@ -24,20 +24,37 @@ import math
 import sys
 import pygame
 
-from .constants import (
-    WIN_W, WIN_H, FPS, CELL, GRID_N, GRID_PX,
-    PANEL_W, PANEL_MARGIN, PANEL_XS, PANEL_LABEL_H,
-    TOOLBAR_H, GRID_Y, METRICS_Y, METRICS_H, LEGEND_Y, LEGEND_H,
-    TERRAIN_COLOR, TERRAIN_LABEL,
-    C_BG, C_PANEL_BG, C_TOOLBAR, C_METRICS, C_LEGEND,
-    C_GRID_LINE, C_TEXT, C_DIM, C_ACCENT, C_BORDER,
-    C_BTN_IDLE, C_BTN_HOVER, C_BTN_ACTIVE, C_BTN_TEXT,
-    C_OPEN, C_CLOSED, C_CURRENT, C_PATH, C_START, C_GOAL,
-    ALGO_NAMES, ALGO_COLORS, SPEEDS, SPEED_IDX, ANIM_TICK,
-)
-from .grid import Grid
-from .algorithms import AlgState, dijkstra_gen, astar_manhattan_gen, astar_euclidean_gen
-from .logger import log_run
+try:
+    from .constants import (
+        WIN_W, WIN_H, FPS, CELL, GRID_N, GRID_PX,
+        PANEL_W, PANEL_MARGIN, PANEL_XS, PANEL_LABEL_H,
+        TOOLBAR_H, GRID_Y, METRICS_Y, METRICS_H, LEGEND_Y, LEGEND_H,
+        TERRAIN_COLOR, TERRAIN_LABEL,
+        C_BG, C_PANEL_BG, C_TOOLBAR, C_METRICS, C_LEGEND,
+        C_GRID_LINE, C_TEXT, C_DIM, C_ACCENT, C_BORDER,
+        C_BTN_IDLE, C_BTN_HOVER, C_BTN_ACTIVE, C_BTN_TEXT,
+        C_OPEN, C_CLOSED, C_CURRENT, C_PATH, C_START, C_GOAL,
+        ALGO_NAMES, ALGO_COLORS, SPEEDS, SPEED_IDX, ANIM_TICK,
+    )
+    from .grid import Grid
+    from .algorithms import AlgState, dijkstra_gen, astar_manhattan_gen, astar_euclidean_gen
+    from .logger import log_run
+except ImportError:
+    # Allow direct execution from inside pygame_app/ with `python3 main.py`.
+    from constants import (
+        WIN_W, WIN_H, FPS, CELL, GRID_N, GRID_PX,
+        PANEL_W, PANEL_MARGIN, PANEL_XS, PANEL_LABEL_H,
+        TOOLBAR_H, GRID_Y, METRICS_Y, METRICS_H, LEGEND_Y, LEGEND_H,
+        TERRAIN_COLOR, TERRAIN_LABEL,
+        C_BG, C_PANEL_BG, C_TOOLBAR, C_METRICS, C_LEGEND,
+        C_GRID_LINE, C_TEXT, C_DIM, C_ACCENT, C_BORDER,
+        C_BTN_IDLE, C_BTN_HOVER, C_BTN_ACTIVE, C_BTN_TEXT,
+        C_OPEN, C_CLOSED, C_CURRENT, C_PATH, C_START, C_GOAL,
+        ALGO_NAMES, ALGO_COLORS, SPEEDS, SPEED_IDX, ANIM_TICK,
+    )
+    from grid import Grid
+    from algorithms import AlgState, dijkstra_gen, astar_manhattan_gen, astar_euclidean_gen
+    from logger import log_run
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -830,8 +847,12 @@ class App:
 # Entry point
 # ══════════════════════════════════════════════════════════════════════════════
 
-if __name__ == '__main__':
+def main() -> None:
     try:
         App().run()
     finally:
         pygame.quit()
+
+
+if __name__ == '__main__':
+    main()

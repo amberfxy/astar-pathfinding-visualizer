@@ -44,8 +44,16 @@ This mode uses browser-side JavaScript modules from `src/`, so a local static se
 
 ### Local Python Run
 
+From the repository root:
+
 ```bash
-python3 -m pygame_app.main
+python3 -m pygame_app
+```
+
+Or from inside `pygame_app/`:
+
+```bash
+python3 main.py
 ```
 
 A 1380x858 window opens showing three algorithm panels side by side in the local Pygame version.
