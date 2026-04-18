@@ -62,7 +62,7 @@ The generator design is important for the methodology because the goal of the pr
 
 Under the current 4-direction, nonnegative-cost grid model, both Manhattan distance and Euclidean distance are admissible heuristics. This lets the project compare efficiency differences while preserving optimality of path cost on the same input.
 
-The repository currently provides two interfaces for this comparison task. The local version is implemented in Pygame as a three-panel visualizer under `pygame_app/`. The browser-facing version is launched from `index.html` and uses the JavaScript files in `src/`, especially `src/states/customState.js`, to reproduce the same three-panel comparison idea in the browser. This browser entry is static-hosting friendly and can be published directly through GitHub Pages. In both interfaces, each panel corresponds to one algorithm, and the user can paint terrain directly on the grid, use preset maps, run all three algorithms simultaneously, pause, step through the search, and toggle `f(n)` overlays.
+The repository currently provides two interfaces for this comparison task. The local version is implemented in Pygame as a three-panel visualizer under `pygame_app/`. The browser-facing version is launched from `index.html` and uses the JavaScript files in `src/`, especially `src/states/customState.js`, to reproduce the same three-panel comparison idea in the browser. This browser entry is static-hosting friendly and is designed for direct GitHub Pages hosting from the repository root. In both interfaces, each panel corresponds to one algorithm, and the user can paint terrain directly on the grid, use preset maps, run all three algorithms simultaneously, pause, step through the search, and toggle `f(n)` overlays.
 
 The local Pygame version also includes two puzzle-style mechanics already present in the implementation: a wall-limited mode that allows up to five placed wall cells at a time and a path-prediction mode that compares a user’s predicted cost to the algorithm’s actual path cost. The browser custom mode focuses on the core visual comparison and on-screen metrics rather than reproducing every local feature exactly.
 
@@ -146,13 +146,13 @@ The search uses a min-heap priority queue for the open set. Under the standard g
 
 The project uses a small number of external libraries and standard-library functions that are directly tied to the implementation goals:
 
-| Library / function | Where used | Goal of using it |
-|---|---|---|
-| `pygame.display.set_mode`, `pygame.draw.rect`, `pygame.event.get` | Local Pygame interface in `pygame_app/main.py` | These Pygame functions are used to create the local interactive window, draw the grid and controls, and process mouse/keyboard input in real time. |
-| `heapq.heappush`, `heapq.heappop` | Search logic in `pygame_app/algorithms.py` | These standard-library priority-queue functions support efficient extraction of the next node with minimum `f(n)` or path cost. They are central to the Dijkstra and A* implementations. |
-| `csv.DictWriter` | Logging in `pygame_app/logger.py` | This function writes one structured metrics row per algorithm run, which makes it easier to analyze benchmark output outside the live interface. |
-| `hashlib.sha256` | Logging in `pygame_app/logger.py` | This function creates a compact fingerprint of the grid state so that logged benchmark rows can be tied back to the exact tested input. |
-| `performance.now()` | Browser custom mode in `src/states/customState.js` | This browser-side timing function is used to record local runtime values during the JavaScript-based interface. |
+| Library / function | Reference | Where used | Goal of using it |
+|---|---|---|---|
+| `pygame.display.set_mode`, `pygame.draw.rect`, `pygame.event.get` | [6] | Local Pygame interface in `pygame_app/main.py` | These Pygame functions are used to create the local interactive window, draw the grid and controls, and process mouse/keyboard input in real time. |
+| `heapq.heappush`, `heapq.heappop` | [3] | Search logic in `pygame_app/algorithms.py` | These standard-library priority-queue functions support efficient extraction of the next node with minimum `f(n)` or path cost. They are central to the Dijkstra and A* implementations. |
+| `csv.DictWriter` | [4] | Logging in `pygame_app/logger.py` | This function writes one structured metrics row per algorithm run, which makes it easier to analyze benchmark output outside the live interface. |
+| `hashlib.sha256` | [5] | Logging in `pygame_app/logger.py` | This function creates a compact fingerprint of the grid state so that logged benchmark rows can be tied back to the exact tested input. |
+| `performance.now()` | [7] | Browser custom mode in `src/states/customState.js` | This browser-side timing function is used to record local runtime values during the JavaScript-based interface. |
 
 The project also uses standard mathematical and drawing utilities such as `math.sin` for the path pulse effect and the HTML Canvas 2D drawing API inside the browser interface. We list only the main functions above because they are the most directly relevant to the project methodology, logging, and interaction design.
 
@@ -176,6 +176,15 @@ The current materials also support additional functional scenarios and consisten
 - A barrier map that forces a detour
 - A no-path case in which the goal is blocked and the algorithm terminates with `found = False`
 - Repeated reruns of the barrier, maze, and random-seed maps to confirm stable node-expansion and path-cost values on the current implementation
+
+The main test scenarios can be summarized more explicitly as inputs and outputs:
+
+| Test scenario | Input | Observed output | Why it matters |
+|---|---|---|---|
+| Empty grid | 20x20 grid with no blocking walls and the same start/goal given to all three algorithms | All algorithms find a path and provide a clean baseline for expansion behavior | Confirms the implementation works in the simplest reachable case |
+| Barrier preset | Weighted grid with a forced detour; same map used in the poster benchmark | Dijkstra 368 expansions, A* Manhattan 183, A* Euclidean 233, with common path cost 25.0 | Serves as the clearest comparative benchmark for efficiency under the same input |
+| No-path case | Goal region manually blocked so no legal path exists | All algorithms terminate with `found = False` rather than looping or returning a false solution | Confirms correct failure behavior |
+| Random seed 42 | Current random map generated from the implementation's seeded configuration | Common path cost 34.0 with 201, 110, and 147 expansions, while path length differs for A* Euclidean | Shows why path cost is a stronger correctness metric than path length on weighted terrain |
 
 Fresh reruns against the current Python implementation confirm that the barrier preset still produces the poster benchmark values. They also confirm that the current maze preset produces path cost 21.0 with node expansions 274, 53, and 64 for Dijkstra, A* Manhattan, and A* Euclidean respectively. For the current random map with seed 42, the rerun values are 201, 110, and 147 expanded nodes with common path cost 34.0, while path length differs for A* Euclidean. This is another reason to treat path cost rather than path length as the main correctness metric on a weighted grid.
 
@@ -211,7 +220,6 @@ The current implementation has several limitations:
 - The current evidence focuses on representative logged runs rather than a large automated experiment suite.
 - The report currently relies on existing logged data rather than a newly generated clean experimental dataset.
 - Feature parity between the browser custom mode and the local Pygame version is not complete.
-- A public GitHub Pages URL still depends on repository settings outside the codebase, even though the root browser entry is now static-hosting ready.
 
 These limitations suggest several directions for future work:
 
@@ -234,13 +242,11 @@ For consistency in the final archived submission, the repository author names sh
 
 ## Conclusion
 
-This project implemented an interactive A* pathfinding visualizer with puzzle-style features to study heuristic efficiency on a weighted 4-direction grid. By running Dijkstra, A* Manhattan, and A* Euclidean on the same user-defined map, the system makes differences in search behavior visible rather than purely theoretical. The current benchmark evidence supports the main claim of the project: admissible heuristics can preserve optimality while reducing search effort, and the choice of heuristic affects how efficiently the search reaches an optimal-cost solution.
+This project implemented an interactive A* pathfinding visualizer with puzzle-style features to study heuristic efficiency on a weighted 4-direction grid. On the weighted 4-direction grid used in this project, the tested admissible heuristics preserved optimal path cost, and Manhattan was the most efficient heuristic among the ones we evaluated. By running Dijkstra, A* Manhattan, and A* Euclidean on the same user-defined map, the system makes differences in search behavior visible rather than purely theoretical. The current benchmark evidence supports the main claim of the project: admissible heuristics can preserve optimality while reducing search effort, and the choice of heuristic affects how efficiently the search reaches an optimal-cost solution.
 
 The strongest contribution of the project is not only the final path returned by the algorithms, but the side-by-side environment for observing, comparing, and explaining their behavior. By combining a weighted-grid model, synchronized visualization, and logged metrics, the project turns a shortest-path topic from the course into a concrete tool for heuristic analysis. The final result is a project-specific comparison environment rather than a one-time pathfinding answer, which is why the project remains meaningful even in a setting where direct AI-generated solutions already exist.
 
 ### Individual Reflections
-
-The following reflection paragraphs are draft submission-ready versions. Each team member should review and personalize their own paragraph before the final PDF is exported.
 
 **Jiaxin Jia.** This project was valuable because it showed me how much interface design affects whether an algorithm is actually understandable to other people. I learned that building an interactive visualization is not just a cosmetic add-on; it changes how clearly a technical idea can be communicated. I think this experience will still be useful in future Northeastern courses and in any future work where I need to explain technical systems to users or teammates.
 
@@ -274,3 +280,81 @@ For the submitted ZIP file, the most relevant source files are:
 - `README.md`: instructions for running the browser and local versions
 
 In the final submitted ZIP file, these files together form the relevant computer program for the project. In the final PDF export, the appendix can either include the full listing of the most important files above or include representative code listings together with this file map, depending on the instructor's preferred report length.
+
+## Appendix B — Representative Source Code Excerpts
+
+The full source code is submitted separately in the ZIP file. The excerpts below are included only to make the appendix more concrete by showing representative parts of the implemented program.
+
+**Excerpt 1: generator-based search loop (`pygame_app/algorithms.py`)**
+
+```python
+while heap:
+    _, _, pos = heapq.heappop(heap)
+
+    if pos in closed:
+        open_set.discard(pos)
+        continue
+
+    open_set.discard(pos)
+    closed.add(pos)
+    state.current = pos
+    state.nodes_expanded = len(closed)
+    yield state
+
+    if pos == goal:
+        state.path = _reconstruct(came_from, goal)
+        state.path_cost = g[goal]
+        state.done = True
+        state.found = True
+        yield state
+        return
+```
+
+This excerpt shows the generator-based design used to support synchronized visualization. The algorithm does not only compute a final path; it yields intermediate states so the interface can render the frontier and expanded nodes step by step.
+
+**Excerpt 2: CSV metric logging (`pygame_app/logger.py`)**
+
+```python
+with open(LOG_PATH, 'a', newline='') as f:
+    writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
+    if write_header:
+        writer.writeheader()
+
+    for name, state in zip(algo_names, states):
+        if state is None:
+            continue
+        writer.writerow({
+            'timestamp': ts,
+            'algorithm': name,
+            'grid_hash': ghash,
+            'nodes_expanded': state.nodes_expanded,
+            'path_cost': f'{state.path_cost:.4f}' if state.found else '0.0000',
+            'runtime_ms': f'{state.runtime_ms:.6f}',
+            'found': state.found,
+        })
+```
+
+This excerpt shows how the local Pygame version records structured benchmark output for later comparison. Logging is part of the methodology because it preserves result evidence outside the live demo.
+
+**Excerpt 3: browser-side priority queue (`src/utils.js`)**
+
+```javascript
+export class MinHeap {
+    constructor() { this._h = []; }
+
+    push(item) {
+        this._h.push(item);
+        this._up(this._h.length - 1);
+    }
+
+    pop() {
+        if (this._h.length === 0) return undefined;
+        const top = this._h[0];
+        const last = this._h.pop();
+        if (this._h.length > 0) { this._h[0] = last; this._down(0); }
+        return top;
+    }
+}
+```
+
+This excerpt shows that the browser version includes its own supporting data structure for the search process rather than only mirroring the Python implementation superficially. It helps maintain the same comparison idea in the GitHub Pages-facing interface.
