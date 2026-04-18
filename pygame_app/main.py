@@ -30,11 +30,13 @@ try:
         PANEL_W, PANEL_MARGIN, PANEL_XS, PANEL_LABEL_H,
         TOOLBAR_H, GRID_Y, METRICS_Y, METRICS_H, LEGEND_Y, LEGEND_H,
         TERRAIN_COLOR, TERRAIN_LABEL,
-        C_BG, C_PANEL_BG, C_TOOLBAR, C_METRICS, C_LEGEND,
+        C_BG, C_PANEL_BG, C_TOOLBAR_A, C_TOOLBAR_B, C_TOOLBAR_ROW, C_METRICS, C_LEGEND,
         C_GRID_LINE, C_TEXT, C_DIM, C_ACCENT, C_BORDER,
-        C_BTN_IDLE, C_BTN_HOVER, C_BTN_ACTIVE, C_BTN_TEXT,
-        C_OPEN, C_CLOSED, C_CURRENT, C_PATH, C_START, C_GOAL,
+        C_BTN_IDLE, C_BTN_HOVER, C_BTN_ACTIVE, C_BTN_TEXT, C_BTN_TEXT_ACTIVE,
+        C_OPEN, C_CLOSED, C_CURRENT, C_PATH, C_PATH_GLOW, C_START, C_GOAL,
+        CLAY_SHADOW, CLAY_SHADOW_SM,
         ALGO_NAMES, ALGO_COLORS, SPEEDS, SPEED_IDX, ANIM_TICK,
+        PULSE_SPEED,
     )
     from .grid import Grid
     from .algorithms import AlgState, dijkstra_gen, astar_manhattan_gen, astar_euclidean_gen
@@ -46,11 +48,13 @@ except ImportError:
         PANEL_W, PANEL_MARGIN, PANEL_XS, PANEL_LABEL_H,
         TOOLBAR_H, GRID_Y, METRICS_Y, METRICS_H, LEGEND_Y, LEGEND_H,
         TERRAIN_COLOR, TERRAIN_LABEL,
-        C_BG, C_PANEL_BG, C_TOOLBAR, C_METRICS, C_LEGEND,
+        C_BG, C_PANEL_BG, C_TOOLBAR_A, C_TOOLBAR_B, C_TOOLBAR_ROW, C_METRICS, C_LEGEND,
         C_GRID_LINE, C_TEXT, C_DIM, C_ACCENT, C_BORDER,
-        C_BTN_IDLE, C_BTN_HOVER, C_BTN_ACTIVE, C_BTN_TEXT,
-        C_OPEN, C_CLOSED, C_CURRENT, C_PATH, C_START, C_GOAL,
+        C_BTN_IDLE, C_BTN_HOVER, C_BTN_ACTIVE, C_BTN_TEXT, C_BTN_TEXT_ACTIVE,
+        C_OPEN, C_CLOSED, C_CURRENT, C_PATH, C_PATH_GLOW, C_START, C_GOAL,
+        CLAY_SHADOW, CLAY_SHADOW_SM,
         ALGO_NAMES, ALGO_COLORS, SPEEDS, SPEED_IDX, ANIM_TICK,
+        PULSE_SPEED,
     )
     from grid import Grid
     from algorithms import AlgState, dijkstra_gen, astar_manhattan_gen, astar_euclidean_gen
@@ -83,36 +87,59 @@ class Button:
         return self.rect.collidepoint(pos)
 
     def draw(self, surf: pygame.Surface, font: pygame.font.Font) -> None:
+        is_large = self.rect.height > 40
+        radius = 14 if is_large else 9
         bg = C_BTN_ACTIVE if self.active else (C_BTN_HOVER if self.hovered else C_BTN_IDLE)
-        pygame.draw.rect(surf, bg, self.rect, border_radius=8)
+        text_color = C_BTN_TEXT_ACTIVE if self.active else C_BTN_TEXT
 
-        if self.icon in ('start', 'goal'):
-            # Neon glow border — always visible, brighter when active
-            neon = (50, 220, 80) if self.icon == 'start' else (230, 30, 65)
-            alpha = 255 if self.active else 160
-            border_col = tuple(int(c * alpha / 255) for c in neon)
-            pygame.draw.rect(surf, border_col, self.rect, 2, border_radius=8)
-        else:
-            pygame.draw.rect(surf, C_BORDER, self.rect, 1, border_radius=8)
+        if not self.active:
+            shadow_pad = 10 if is_large else 8
+            shadow = pygame.Surface(
+                (self.rect.width + shadow_pad, self.rect.height + shadow_pad),
+                pygame.SRCALPHA,
+            )
+            shadow_color = CLAY_SHADOW if is_large else CLAY_SHADOW_SM
+            pygame.draw.rect(
+                shadow,
+                shadow_color,
+                (shadow_pad // 2, shadow_pad // 2, self.rect.width, self.rect.height),
+                border_radius=radius,
+            )
+            surf.blit(shadow, (self.rect.x - shadow_pad // 2 + 2, self.rect.y - shadow_pad // 2 + 2))
+
+        pygame.draw.rect(surf, bg, self.rect, border_radius=radius)
+        pygame.draw.rect(
+            surf,
+            (29, 78, 216) if self.active else C_BORDER,
+            self.rect,
+            2 if is_large else 1,
+            border_radius=radius,
+        )
 
         if self.icon:
             # Icon centred in upper area, label at the bottom
             icon_cy = self.rect.top + (self.rect.height - 18) // 2
             cx = self.rect.centerx
             self._draw_icon(surf, cx, icon_cy)
-            lbl = font.render(self.label, True, C_BTN_TEXT)
+            lbl = font.render(self.label, True, text_color)
+            lx = self.rect.centerx - lbl.get_width() // 2
+            ly = self.rect.bottom - lbl.get_height() - 4
+            surf.blit(lbl, (lx, ly))
+        elif hasattr(self, 'key') and is_large:
+            self._draw_preset_icon(surf, self.rect.centerx, self.rect.top + 24, self.active)
+            lbl = font.render(self.label, True, text_color)
             lx = self.rect.centerx - lbl.get_width() // 2
             ly = self.rect.bottom - lbl.get_height() - 4
             surf.blit(lbl, (lx, ly))
         else:
-            # Legacy layout: optional swatch + centred text
+            # Compact row-2 buttons: centred text
             x_off = 6
             if self.swatch is not None:
                 sr = pygame.Rect(self.rect.x + 5, self.rect.centery - 6, 12, 12)
                 pygame.draw.rect(surf, self.swatch, sr, border_radius=2)
                 pygame.draw.rect(surf, (160, 160, 160), sr, 1, border_radius=2)
                 x_off = 22
-            lbl = font.render(self.label, True, C_BTN_TEXT)
+            lbl = font.render(self.label, True, text_color)
             surf.blit(lbl, (self.rect.x + x_off,
                             self.rect.centery - lbl.get_height() // 2))
 
@@ -191,6 +218,47 @@ class Button:
         # Arrow head
         pygame.draw.polygon(surf, col, [(cx + 12, cy - 5), (cx + 8, cy - 12), (cx + 16, cy - 12)])
 
+    def _draw_preset_icon(self, surf: pygame.Surface, cx: int, cy: int, is_active: bool) -> None:
+        key = getattr(self, 'key', None)
+        wall_c = (192, 192, 208) if is_active else (90, 82, 112)
+        path_c = (165, 180, 252) if is_active else (124, 58, 237)
+        arrow_c = (147, 197, 253) if is_active else (2, 132, 199)
+
+        if key == 'maze':
+            s = 4
+            ox, oy = cx - 10, cy - 10
+            walls = {(0, 1), (1, 1), (1, 3), (2, 3), (3, 0), (3, 1), (4, 3)}
+            path_cells = {(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (3, 2), (4, 2), (4, 4)}
+            for r in range(5):
+                for c in range(5):
+                    if (r, c) in walls:
+                        color = wall_c
+                    elif (r, c) in path_cells:
+                        color = path_c
+                    else:
+                        color = (232, 228, 240)
+                    pygame.draw.rect(surf, color, (ox + c * s + 1, oy + r * s + 1, s - 1, s - 1))
+            pygame.draw.circle(surf, C_START, (ox + 2, oy + 2), 2)
+            pygame.draw.circle(surf, C_GOAL, (ox + 5 * s - 2, oy + 5 * s - 2), 2)
+        elif key == 'barrier':
+            mid_x = cx
+            pygame.draw.line(surf, wall_c, (mid_x, cy - 11), (mid_x, cy - 2), 3)
+            pygame.draw.line(surf, wall_c, (mid_x, cy + 4), (mid_x, cy + 11), 3)
+            points = [(mid_x - 2, cy - 9), (cx - 9, cy - 9), (cx - 9, cy + 9), (mid_x - 2, cy + 9)]
+            pygame.draw.lines(surf, arrow_c, False, points, 2)
+            pygame.draw.polygon(surf, arrow_c, [(mid_x - 2, cy + 5), (mid_x - 2, cy + 13), (mid_x + 5, cy + 9)])
+        elif key == 'random':
+            patches = [
+                (-10, -9, 6, 5, wall_c),
+                (-1, -11, 5, 4, (120, 195, 75)),
+                (5, -7, 5, 5, wall_c),
+                (-7, 0, 8, 5, (130, 90, 40)),
+                (4, 4, 7, 4, (120, 195, 75)),
+                (-5, 6, 5, 3, wall_c),
+            ]
+            for dx, dy, w, h, color in patches:
+                pygame.draw.rect(surf, color, (cx + dx, cy + dy, w, h), border_radius=2)
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 # App
@@ -216,18 +284,18 @@ class App:
     def __init__(self) -> None:
         pygame.init()
         pygame.display.set_caption(
-            'CS5800  ·  Interactive A* Pathfinding Puzzle Game'
+            'Interactive A* Pathfinding Puzzle Game'
         )
         self.screen = pygame.display.set_mode((WIN_W, WIN_H))
         self.clock  = pygame.time.Clock()
 
         # ── Fonts ──────────────────────────────────────────────────────────
         self.f_cell    = pygame.font.SysFont('monospace',  8)   # f(n) in cells
-        self.f_small   = pygame.font.SysFont('sans',      11)
-        self.f_btn     = pygame.font.SysFont('sans',      12)
-        self.f_label   = pygame.font.SysFont('sans',      13, bold=True)
+        self.f_small   = pygame.font.SysFont('Atkinson Hyperlegible,Arial', 11)
+        self.f_btn     = pygame.font.SysFont('Atkinson Hyperlegible,Arial', 12, bold=True)
+        self.f_label   = pygame.font.SysFont('Atkinson Hyperlegible,Arial', 13, bold=True)
         self.f_metrics = pygame.font.SysFont('monospace', 12)
-        self.f_title   = pygame.font.SysFont('sans',      14, bold=True)
+        self.f_title   = pygame.font.SysFont('Georgia',   18, bold=True)
 
         # ── State ──────────────────────────────────────────────────────────
         self.grid      = Grid()
@@ -256,10 +324,10 @@ class App:
     # ── Toolbar construction ───────────────────────────────────────────────
 
     def _build_toolbar(self) -> None:
-        ROW1_Y = 6
-        ROW1_H = 96   # tall icon buttons
-        ROW2_Y = ROW1_Y + ROW1_H + 6
-        H = 36
+        ROW1_Y = 10
+        ROW1_H = 64
+        ROW2_Y = 84
+        H = 26
 
         # ── Row 1: Brush buttons ───────────────────────────────────────────
         self.brush_btns: list[Button] = []
@@ -579,21 +647,29 @@ class App:
     # ── Toolbar ────────────────────────────────────────────────────────────
 
     def _draw_toolbar(self) -> None:
-        pygame.draw.rect(self.screen, C_TOOLBAR, (0, 0, WIN_W, TOOLBAR_H))
+        self._draw_horizontal_gradient(pygame.Rect(0, 0, WIN_W, 78), C_TOOLBAR_A, C_TOOLBAR_B)
+        pygame.draw.rect(self.screen, C_TOOLBAR_ROW, (0, 78, WIN_W, TOOLBAR_H - 78))
         pygame.draw.line(self.screen, C_BORDER, (0, TOOLBAR_H - 1), (WIN_W, TOOLBAR_H - 1))
 
         # Title (top-right)
         title = self.f_title.render(
-            'A* Pathfinding Visualizer  ·  CS5800', True, C_ACCENT)
-        self.screen.blit(title, (WIN_W - title.get_width() - 12, 10))
+            'Interactive A* Pathfinding Puzzle Game', True, (255, 255, 255))
+        self.screen.blit(title, (WIN_W - title.get_width() - 14, 18))
+
+        if self.preset_btns:
+            divider_x = self.preset_btns[0].rect.x - 8
+            divider = pygame.Surface((1, 44), pygame.SRCALPHA)
+            divider.fill((255, 255, 255, 64))
+            self.screen.blit(divider, (divider_x, 14))
 
         # Row 2 labels (controls row)
-        row2_label_y = TOOLBAR_H - 36 - 14   # just above the action buttons
+        row2_label_y = 98
         lbl2 = self.f_small.render('Controls:', True, C_DIM)
         self.screen.blit(lbl2, (10, row2_label_y))
 
-        spd_lbl = self.f_small.render('Speed:', True, C_DIM)
-        self.screen.blit(spd_lbl, (520, row2_label_y))
+        if self.speed_btns:
+            spd_lbl = self.f_small.render('Speed:', True, C_DIM)
+            self.screen.blit(spd_lbl, (self.speed_btns[0].rect.x, row2_label_y))
 
         all_btns = (self.brush_btns + self.preset_btns
                     + list(self.action_btns.values()) + self.speed_btns)
@@ -608,8 +684,7 @@ class App:
 
         # Panel background
         panel_rect = pygame.Rect(px, py, PANEL_W, LEGEND_Y - py)
-        pygame.draw.rect(self.screen, C_PANEL_BG, panel_rect, border_radius=6)
-        pygame.draw.rect(self.screen, C_BORDER,   panel_rect, 1, border_radius=6)
+        self._draw_card(panel_rect, C_PANEL_BG, radius=12)
 
         # Algorithm name label
         name_surf = self.f_label.render(ALGO_NAMES[idx], True, ALGO_COLORS[idx])
@@ -676,7 +751,6 @@ class App:
     ) -> tuple[int, int, int]:
         """Priority: PATH > CURRENT > CLOSED > OPEN > terrain."""
         if pos in path_set:
-            from constants import PULSE_SPEED, C_PATH_GLOW
             pulse = (math.sin(self.global_time * PULSE_SPEED) + 1.0) / 2.0
             r = int(C_PATH[0] + (C_PATH_GLOW[0] - C_PATH[0]) * pulse)
             g = int(C_PATH[1] + (C_PATH_GLOW[1] - C_PATH[1]) * pulse)
@@ -692,7 +766,7 @@ class App:
 
     def _draw_fval(self, x: int, y: int, f: float) -> None:
         text = f'{f:.0f}' if f < 1000 else f'{int(f)}'
-        surf = self.f_cell.render(text, True, (230, 240, 255))
+        surf = self.f_cell.render(text, True, C_TEXT)
         # Clip to cell so text never bleeds
         self.screen.set_clip(pygame.Rect(x, y, CELL, CELL))
         self.screen.blit(surf, (x + 1, y + CELL - surf.get_height() - 1))
@@ -767,7 +841,7 @@ class App:
         tx = 20
         ty = METRICS_Y + 6
         for h, w in zip(headers, col_widths):
-            surf = self.f_label.render(h, True, C_ACCENT)
+            surf = self.f_label.render(h, True, C_TEXT if h == 'Algorithm' else C_ACCENT)
             self.screen.blit(surf, (tx, ty))
             tx += w
 
@@ -812,7 +886,7 @@ class App:
         ly = LEGEND_Y + 10
         for color, label in items:
             pygame.draw.rect(self.screen, color, (lx, ly, 14, 14), border_radius=2)
-            pygame.draw.rect(self.screen, (110, 110, 130), (lx, ly, 14, 14), 1, border_radius=2)
+            pygame.draw.rect(self.screen, C_BORDER, (lx, ly, 14, 14), 1, border_radius=2)
             surf = self.f_small.render(label, True, C_DIM)
             self.screen.blit(surf, (lx + 18, ly))
             lx += 18 + surf.get_width() + 18
@@ -841,6 +915,44 @@ class App:
     def _quit() -> None:
         pygame.quit()
         sys.exit()
+
+    def _draw_horizontal_gradient(
+        self,
+        rect: pygame.Rect,
+        left: tuple[int, int, int],
+        right: tuple[int, int, int],
+    ) -> None:
+        for i in range(rect.width):
+            t = i / max(1, rect.width - 1)
+            color = (
+                int(left[0] + (right[0] - left[0]) * t),
+                int(left[1] + (right[1] - left[1]) * t),
+                int(left[2] + (right[2] - left[2]) * t),
+            )
+            pygame.draw.line(
+                self.screen,
+                color,
+                (rect.x + i, rect.y),
+                (rect.x + i, rect.y + rect.height),
+            )
+
+    def _draw_card(
+        self,
+        rect: pygame.Rect,
+        fill: tuple[int, int, int],
+        *,
+        radius: int = 12,
+    ) -> None:
+        shadow = pygame.Surface((rect.width + 14, rect.height + 14), pygame.SRCALPHA)
+        pygame.draw.rect(
+            shadow,
+            CLAY_SHADOW,
+            (7, 7, rect.width, rect.height),
+            border_radius=radius,
+        )
+        self.screen.blit(shadow, (rect.x - 4, rect.y - 4))
+        pygame.draw.rect(self.screen, fill, rect, border_radius=radius)
+        pygame.draw.rect(self.screen, C_BORDER, rect, 1, border_radius=radius)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
