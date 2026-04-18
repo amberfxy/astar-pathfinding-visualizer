@@ -58,13 +58,13 @@ The implementation compares three algorithms:
 
 The search core is implemented as one generator-based framework. Dijkstra is the uninformed baseline and is implemented as A* with `h(n)=0`. Each search keeps a min-heap open set, a closed set, `g` values, `f` values, and predecessor pointers for path reconstruction. After each node expansion, the algorithm yields a state snapshot so the interface can render the current frontier, expanded nodes, and score values step by step. This structure makes the comparison visual and synchronized across all three algorithms.
 
-The generator design matters because the goal of the project is not only to compute a shortest path, but also to show the search process. By yielding the intermediate state after each expansion, the visualizer can show how the heuristic changes the order in which nodes are explored. This is one of the main ways the system makes algorithm behavior easier to understand.
+We use a generator-based design so the algorithm can return its current state after each node expansion instead of only returning the final path. This allows the visualizer to show how the search progresses step by step and makes it easier to compare how different heuristics change the search order.
 
 Under the current 4-direction, nonnegative-cost grid model, both Manhattan distance and Euclidean distance are admissible heuristics. This lets us compare efficiency differences while still preserving optimal path cost on the same input.
 
 The repository currently provides two interfaces for this comparison task. The local version is implemented in Pygame as a three-panel visualizer under `pygame_app/`. The browser version is launched from `index.html` and uses the JavaScript files in `src/`, especially `src/states/customState.js`, to reproduce the same three-panel comparison idea in the browser. This browser entry is static-hosting friendly and is designed for direct GitHub Pages hosting from the repository root. In both interfaces, each panel corresponds to one algorithm, and the user can paint terrain on the grid, use preset maps, run all three algorithms at the same time, pause, step through the search, and toggle `f(n)` overlays.
 
-The local Pygame version also includes two puzzle-style mechanics already present in the implementation: a wall-limited mode that allows up to five placed wall cells at a time and a path-prediction mode that compares a user's predicted cost to the algorithm's actual path cost. The browser version focuses on the core visual comparison and on-screen metrics rather than matching every local feature exactly.
+The local Pygame version also includes two extra features that are not fully carried over to the browser version. One is a wall-limited mode, which allows up to five placed wall cells at a time. The other is a path-prediction mode, in which the user can guess a path and compare its cost with the algorithm's actual path cost. The browser version keeps the main side-by-side comparison and on-screen metrics, but it does not match every local Pygame feature exactly.
 
 ### Inputs and Outputs
 
