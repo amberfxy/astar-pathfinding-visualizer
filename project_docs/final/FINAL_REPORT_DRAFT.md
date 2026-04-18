@@ -38,6 +38,16 @@ We approached the project in a sequence of concrete implementation steps. First,
 
 This sequence matters because the final project is not only an algorithm implementation; it is also a comparison environment. The visualization and logging layers are therefore part of the methodology rather than just presentation details.
 
+### Implementation Iterations
+
+The project also evolved through several implementation iterations that improved clarity, reproducibility, and presentation quality.
+
+**Iteration 1: Core weighted-grid search comparison.** We first implemented the weighted grid model, the terrain-cost system, and the shared generator-based search framework for Dijkstra, A* Manhattan, and A* Euclidean. The goal of this stage was to ensure that all three algorithms could be run on the same input and compared fairly using the same movement model and cost definition.
+
+**Iteration 2: Interactive comparison environment.** After the baseline search logic was working, we added the synchronized three-panel visualizer, terrain editing, preset maps, and run/pause/step controls. The goal of this stage was to make the search process observable so that heuristic behavior could be interpreted visually rather than only through final path output.
+
+**Iteration 3: Logging, browser access, and presentation refinement.** Finally, we added metric logging for the local Pygame version, prepared a browser-facing version rooted at `index.html`, and aligned the project structure and interface wording for presentation and submission. The goal of this stage was to make the project easier to validate, easier to demonstrate, and more suitable for a final report and oral presentation.
+
 ### Methodology and Implementation
 
 The implementation compares three algorithms:
@@ -132,6 +142,20 @@ In this framework, Dijkstra is implemented as A* with a zero heuristic. Manhatta
 
 The search uses a min-heap priority queue for the open set. Under the standard graph interpretation, the time complexity is approximately \(O(|E| + |V| \log |V|)\), with \(O(|V|)\) additional space for the score maps, predecessor structure, and heap contents. In the current project, the graph is a grid, so \(|V|\) is the number of cells and \(|E|\) is the number of walkable neighbor connections.
 
+### Libraries and External Functions Used
+
+The project uses a small number of external libraries and standard-library functions that are directly tied to the implementation goals:
+
+| Library / function | Where used | Goal of using it |
+|---|---|---|
+| `pygame.display.set_mode`, `pygame.draw.rect`, `pygame.event.get` | Local Pygame interface in `pygame_app/main.py` | These Pygame functions are used to create the local interactive window, draw the grid and controls, and process mouse/keyboard input in real time. |
+| `heapq.heappush`, `heapq.heappop` | Search logic in `pygame_app/algorithms.py` | These standard-library priority-queue functions support efficient extraction of the next node with minimum `f(n)` or path cost. They are central to the Dijkstra and A* implementations. |
+| `csv.DictWriter` | Logging in `pygame_app/logger.py` | This function writes one structured metrics row per algorithm run, which makes it easier to analyze benchmark output outside the live interface. |
+| `hashlib.sha256` | Logging in `pygame_app/logger.py` | This function creates a compact fingerprint of the grid state so that logged benchmark rows can be tied back to the exact tested input. |
+| `performance.now()` | Browser custom mode in `src/states/customState.js` | This browser-side timing function is used to record local runtime values during the JavaScript-based interface. |
+
+The project also uses standard mathematical and drawing utilities such as `math.sin` for the path pulse effect and the HTML Canvas 2D drawing API inside the browser interface. We list only the main functions above because they are the most directly relevant to the project methodology, logging, and interaction design.
+
 ### Results and Testing
 
 The current evaluation evidence comes from the poster benchmark, the logged CSV runs from the local Pygame version, the implemented test scenarios in the visualizer, and a final consistency check against the current codebase. We do **not** claim a fully automated large-scale experiment pipeline in this report because that is not part of the current evidence set.
@@ -214,7 +238,39 @@ This project implemented an interactive A* pathfinding visualizer with puzzle-st
 
 The strongest contribution of the project is not only the final path returned by the algorithms, but the side-by-side environment for observing, comparing, and explaining their behavior. By combining a weighted-grid model, synchronized visualization, and logged metrics, the project turns a shortest-path topic from the course into a concrete tool for heuristic analysis. The final result is a project-specific comparison environment rather than a one-time pathfinding answer, which is why the project remains meaningful even in a setting where direct AI-generated solutions already exist.
 
+### Individual Reflections
+
+The following reflection paragraphs are draft submission-ready versions. Each team member should review and personalize their own paragraph before the final PDF is exported.
+
+**Jiaxin Jia.** This project was valuable because it showed me how much interface design affects whether an algorithm is actually understandable to other people. I learned that building an interactive visualization is not just a cosmetic add-on; it changes how clearly a technical idea can be communicated. I think this experience will still be useful in future Northeastern courses and in any future work where I need to explain technical systems to users or teammates.
+
+**Xiaoyuan Lu.** The most useful part of this project for me was turning shortest-path theory into a working implementation that could be tested and compared across multiple heuristics. I learned more about how admissibility, path cost, and priority-queue behavior interact in practice, especially once the algorithm is placed in a weighted environment instead of a simple textbook example. This project will be useful to me in later courses and in future software work that requires translating theory into reliable implementations.
+
+**Xinyuan Fan.** This project helped me practice the evaluation side of algorithmic work, not just the implementation side. I learned how to think more carefully about benchmarks, logging, result interpretation, and how to present evidence in a way that is both concise and defensible. I think that skill will carry over to later coursework and to future projects where I need to justify design choices with actual data rather than only intuition.
+
 ## References
 
 1. Hart, P. E., Nilsson, N. J., & Raphael, B. (1968). A formal basis for the heuristic determination of minimum cost paths. *IEEE Transactions on Systems Science and Cybernetics, 4*(2), 100-107.
 2. Russell, S., & Norvig, P. (2020). *Artificial Intelligence: A Modern Approach* (4th ed.). Pearson. Chapter 3: Solving Problems by Searching.
+3. Python Software Foundation. (n.d.). *heapq — Heap queue algorithm*. Python 3 documentation. https://docs.python.org/3/library/heapq.html
+4. Python Software Foundation. (n.d.). *csv — CSV file reading and writing*. Python 3 documentation. https://docs.python.org/3/library/csv.html
+5. Python Software Foundation. (n.d.). *hashlib — Secure hashes and message digests*. Python 3 documentation. https://docs.python.org/3/library/hashlib.html
+6. pygame community. (n.d.). *pygame documentation*. https://www.pygame.org/docs/
+7. MDN Web Docs. (n.d.). *Performance.now()* https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
+
+## Appendix A — Submitted Source Code Map
+
+For the submitted ZIP file, the most relevant source files are:
+
+- `index.html`: root browser entry point used by the GitHub Pages version
+- `game.html`: legacy redirect entry for the browser interface
+- `src/states/customState.js`: browser-side comparison interface and JavaScript search-state visualization
+- `src/utils.js`: browser-side support utilities, including the heap implementation used by the web interface
+- `pygame_app/main.py`: local Pygame interface, interaction handling, rendering, and control flow
+- `pygame_app/algorithms.py`: Python search generators for Dijkstra, A* Manhattan, and A* Euclidean
+- `pygame_app/grid.py`: weighted grid model, terrain configuration, and preset maps
+- `pygame_app/constants.py`: local layout, color, and configuration constants
+- `pygame_app/logger.py`: CSV logging for local benchmark output
+- `README.md`: instructions for running the browser and local versions
+
+In the final submitted ZIP file, these files together form the relevant computer program for the project. In the final PDF export, the appendix can either include the full listing of the most important files above or include representative code listings together with this file map, depending on the instructor's preferred report length.
