@@ -5,7 +5,7 @@ Interactive side-by-side comparison of **Dijkstra**, **A\* (Manhattan)**, and **
 The current repository contains two user-facing interfaces for the same comparison task:
 
 - A **browser custom mode** launched from `index.html` and implemented with the web files in `src/`
-- A **local Pygame version** launched from `python3 -m pygame_app.main`
+- A **local Pygame version** launched from `python3 -m pygame_app`
 
 Authors: Jiaxin Jia, Xiaoyuan Lu, Xinyuan Fan
 

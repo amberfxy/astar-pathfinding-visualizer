@@ -54,7 +54,7 @@
 - Explain:
   - browser-facing custom mode launched from `index.html`
   - GitHub Pages can serve this root browser entry directly
-  - local Pygame version launched from `python3 -m pygame_app.main`
+  - local Pygame version launched from `python3 -m pygame_app`
   - terrain painting
   - moving start and goal
   - preset maps

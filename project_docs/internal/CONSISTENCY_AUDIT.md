@@ -37,7 +37,7 @@ This note checks the current GitHub version of the repository against the main p
 ## Important Interface Differences
 
 - The **local Pygame version**:
-  - runs from `python3 -m pygame_app.main`
+  - runs from `python3 -m pygame_app`
   - writes `project_data/metrics_log.csv`
   - includes a 5-wall limit
   - includes predict-path cost feedback
