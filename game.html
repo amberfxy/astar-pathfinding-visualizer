@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>A* Pathfinding Visualizer — CS5800</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #e4e8f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  canvas {
+    display: block;
+    border: 1px solid #c4c8e0;
+    box-shadow: 0 4px 24px rgba(30,50,120,0.10), 0 1px 4px rgba(30,50,120,0.06);
+    border-radius: 6px;
+    cursor: crosshair;
+  }
+</style>
+</head>
+<body>
+<canvas id="game" width="1100" height="720"></canvas>
+
+<script type="module">
+import { createCustomState } from './src/states/customState.js';
+
+const canvas = document.getElementById('game');
+const ctx    = canvas.getContext('2d');
+
+const custom = createCustomState(ctx, () => {});
+
+// ── Input ─────────────────────────────────────────────────────────────────────
+window.addEventListener('keydown', e => custom.handleKey(e.key));
+
+canvas.addEventListener('mousemove', e => {
+    const [x, y] = _pos(e);
+    custom.handleMouseMove(x, y);
+});
+
+canvas.addEventListener('mousedown', e => {
+    const [x, y] = _pos(e);
+    if (e.button === 0) custom.handleMouseDown ? custom.handleMouseDown(x, y) : custom.handleClick(x, y);
+    if (e.button === 2) custom.handleRightClick?.(x, y);
+});
+
+canvas.addEventListener('mouseup', () => custom.handleMouseUp?.());
+canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+// ── Game loop ─────────────────────────────────────────────────────────────────
+let lastTs = 0;
+
+function loop(ts) {
+    const dt = Math.min((ts - lastTs) / 1000, 0.05);
+    lastTs = ts;
+    custom.update(dt);
+    custom.draw();
+    requestAnimationFrame(loop);
+}
+
+document.fonts.ready.then(() => {
+    custom.enter();
+    requestAnimationFrame(ts => { lastTs = ts; requestAnimationFrame(loop); });
+});
+
+// ── Helper ────────────────────────────────────────────────────────────────────
+function _pos(e) {
+    const r = canvas.getBoundingClientRect();
+    return [
+        (e.clientX - r.left) * (canvas.width  / r.width),
+        (e.clientY - r.top)  * (canvas.height / r.height),
+    ];
+}
+</script>
+</body>
+</html>
