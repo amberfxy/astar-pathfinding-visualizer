@@ -19,7 +19,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Callable, Generator
 
-from grid import Grid
+from .grid import Grid
 
 
 # ── Heuristics ─────────────────────────────────────────────────────────────

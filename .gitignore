@@ -1,6 +1,6 @@
-metrics_log.csv
 __pycache__/
 *.pyc
 .claude/
 .idea/
 .DS_Store
+project_data/metrics_log.csv

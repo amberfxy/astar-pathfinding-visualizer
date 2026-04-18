@@ -19,7 +19,7 @@ Central question:
 How do different admissible heuristics affect A* search efficiency on a weighted 4-direction grid while preserving optimality?
 
 Current repository structure:
-- local Pygame implementation: `main.py`
+- local Pygame implementation: `pygame_app/`
 - browser custom mode: `index.html` + `src/states/customState.js`
 
 Project summary:
@@ -59,7 +59,7 @@ Important wording:
 Interface wording:
 - the current repository includes both a local Pygame version and a browser-facing custom mode
 - the browser-facing custom mode is launched from `index.html`
-- do not say the browser mode writes to metrics_log.csv
+- do not say the browser mode writes to project_data/metrics_log.csv
 - if mentioning logging, say the local Pygame version appends CSV metrics
 
 GenAI wording:

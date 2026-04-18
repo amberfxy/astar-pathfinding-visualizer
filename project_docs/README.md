@@ -6,7 +6,7 @@ We intentionally use `project_docs/` instead of `docs/` so the submission docume
 
 The current GitHub version of the repository includes both:
 
-- the original local Pygame comparison tool in `main.py`
+- the original local Pygame comparison tool in `pygame_app/`
 - a browser-facing custom mode in `index.html` and `src/`
 
 The browser entry is now rooted at `index.html` so the repository can be published directly through GitHub Pages without introducing a separate static-site copy of the web files.
@@ -34,3 +34,7 @@ Current internal notes:
 - `GAMMA_SLIDES_PROMPT.md`
 - `GENAI_APPENDIX_TEMPLATE.md`
 - `GITHUB_PAGES_SETUP.md`
+
+## archive
+
+Files in `project_docs/archive/` are older course artifacts kept for reference but not treated as the current polished deliverable set.

@@ -9,7 +9,7 @@ This note checks the current GitHub version of the repository against the main p
   - A* Manhattan
   - A* Euclidean
 - The current GitHub repository now contains **two user-facing interfaces**:
-  - a local Pygame version in `main.py`
+  - a local Pygame version in `pygame_app/`
   - a browser custom mode rooted at `index.html` and implemented with `src/`
 - The main documentation risk is that some older wording still assumes a packaged `build/web` deployment or treats the browser mode and local Pygame mode as perfectly identical.
 
@@ -37,8 +37,8 @@ This note checks the current GitHub version of the repository against the main p
 ## Important Interface Differences
 
 - The **local Pygame version**:
-  - runs from `main.py`
-  - writes `metrics_log.csv`
+  - runs from `python3 -m pygame_app.main`
+  - writes `project_data/metrics_log.csv`
   - includes a 5-wall limit
   - includes predict-path cost feedback
 - The **browser custom mode**:
@@ -52,7 +52,7 @@ This note checks the current GitHub version of the repository against the main p
 
 - `README.md` previously referenced `build/web`, which is not part of the current GitHub version.
 - Any document that still describes `game.html` as the main browser entry is now outdated; `game.html` is only a legacy redirect.
-- Any document that says the browser version appends to `metrics_log.csv` is too strong.
+- Any document that says the browser version appends to `project_data/metrics_log.csv` is too strong.
 - Any document that implies all local Pygame features exist unchanged in the browser custom mode is too strong.
 
 ## Benchmark Accuracy
@@ -71,7 +71,7 @@ These values were rechecked against the current codebase.
 
 - `The current repository includes both a local Pygame version and a browser-facing custom mode.`
 - `The browser-facing custom mode is rooted at index.html so it can be published directly through GitHub Pages.`
-- `The local Pygame version appends CSV logs; the browser custom mode displays metrics on screen.`
+- `The local Pygame version appends CSV logs in project_data/metrics_log.csv; the browser custom mode displays metrics on screen.`
 - `The poster benchmark matches the current barrier preset in the Python implementation.`
 - `Path cost is the primary correctness metric on the weighted grid.`
 

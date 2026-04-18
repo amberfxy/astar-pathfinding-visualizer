@@ -5,7 +5,7 @@ Interactive side-by-side comparison of **Dijkstra**, **A\* (Manhattan)**, and **
 The current repository contains two user-facing interfaces for the same comparison task:
 
 - A **browser custom mode** launched from `index.html` and implemented with the web files in `src/`
-- A **local Pygame version** launched from `main.py`
+- A **local Pygame version** launched from `python3 -m pygame_app.main`
 
 Authors: Jiaxin Jia, Xiaoyuan Lu, Xinyuan Fan
 
@@ -45,7 +45,7 @@ This mode uses browser-side JavaScript modules from `src/`, so a local static se
 ### Local Python Run
 
 ```bash
-python3 main.py
+python3 -m pygame_app.main
 ```
 
 A 1380x858 window opens showing three algorithm panels side by side in the local Pygame version.
@@ -69,7 +69,7 @@ A 1380x858 window opens showing three algorithm panels side by side in the local
 
 ### Local Pygame Version Only
 
-- CSV logging to `metrics_log.csv`
+- CSV logging to `project_data/metrics_log.csv`
 - Wall-limited mechanic with up to 5 placed wall cells at a time
 - Predict-path cost feedback in the panel footer
 
@@ -77,7 +77,7 @@ A 1380x858 window opens showing three algorithm panels side by side in the local
 
 - The browser custom mode focuses on the core side-by-side comparison interface
 - It is now structured so the root `index.html` can be served directly by GitHub Pages
-- It displays metrics on screen but does **not** append runs to `metrics_log.csv`
+- It displays metrics on screen but does **not** append runs to `project_data/metrics_log.csv`
 
 ## Local Pygame Demo Guide
 
@@ -108,7 +108,7 @@ A 1380x858 window opens showing three algorithm panels side by side in the local
 
 ## Metric Logging
 
-In the **local Pygame version**, every completed run appends results to `metrics_log.csv` in the working directory. Fields:
+In the **local Pygame version**, every completed run appends results to `project_data/metrics_log.csv`. Fields:
 
 | Column | Description |
 |---|---|
@@ -125,14 +125,16 @@ In the **local Pygame version**, every completed run appends results to `metrics
 ## Project Structure
 
 ```
-main.py                  — Local Pygame UI, event loop, rendering
-algorithms.py            — Python Dijkstra and A* generators
-grid.py                  — Weighted grid model, terrain types, preset maps
-constants.py             — Layout, colors, terrain costs, configuration
-logger.py                — CSV metrics logging for the local version
 index.html               — Root browser entry point for static hosting / GitHub Pages
 game.html                — Legacy redirect to the root browser entry point
+pygame_app/main.py       — Local Pygame UI, event loop, rendering
+pygame_app/algorithms.py — Python Dijkstra and A* generators
+pygame_app/grid.py       — Weighted grid model, terrain types, preset maps
+pygame_app/constants.py  — Layout, colors, terrain costs, configuration
+pygame_app/logger.py     — CSV metrics logging for the local version
 src/states/customState.js — Browser-side three-panel custom mode
 src/utils.js             — Shared browser-side utilities, including MinHeap
+project_docs/            — Submission drafts, internal notes, and archive material
+project_data/            — Local runtime outputs such as CSV metrics logs
 requirements.txt         — Python dependencies
 ```

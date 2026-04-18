@@ -14,10 +14,10 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from algorithms import AlgState
-    from grid import Grid
+    from .algorithms import AlgState
+    from .grid import Grid
 
-LOG_PATH = Path('metrics_log.csv')
+LOG_PATH = Path(__file__).resolve().parent.parent / 'project_data' / 'metrics_log.csv'
 
 FIELDNAMES = [
     'timestamp', 'algorithm', 'grid_hash',
@@ -39,6 +39,7 @@ def log_run(
     grid: 'Grid',
 ) -> None:
     """Append one row per algorithm to the CSV log."""
+    LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
     ghash = _grid_hash(grid)
     ts    = datetime.datetime.now().isoformat(timespec='seconds')
 

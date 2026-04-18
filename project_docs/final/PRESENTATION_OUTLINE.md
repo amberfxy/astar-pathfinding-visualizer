@@ -54,14 +54,14 @@
 - Explain:
   - browser-facing custom mode launched from `index.html`
   - GitHub Pages can serve this root browser entry directly
-  - local Pygame version launched from `main.py`
+  - local Pygame version launched from `python3 -m pygame_app.main`
   - terrain painting
   - moving start and goal
   - preset maps
   - run / pause / step
   - `f(n)` overlay
   - on-screen comparison metrics
-  - note that CSV logging belongs to the local Pygame version
+  - note that CSV logging belongs to the local Pygame version and is written to `project_data/metrics_log.csv`
 
 ## Slide 6 - Results
 

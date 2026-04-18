@@ -6,7 +6,7 @@ weights (CLRS Ch. 22).  Each cell is a vertex; edges connect 4-directional
 neighbours.  Edge weight to enter cell (r, c) equals TERRAIN_COST[terrain].
 """
 from __future__ import annotations
-from constants import GRID_N, TERRAIN_COST, TERRAIN_COLOR
+from .constants import GRID_N, TERRAIN_COST, TERRAIN_COLOR
 
 
 class Grid:

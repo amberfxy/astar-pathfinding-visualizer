@@ -4,7 +4,7 @@ This file records fresh validation results against the current Python implementa
 
 ## Scope
 
-- Validation target: local Python implementation (`main.py`, `algorithms.py`, `grid.py`)
+- Validation target: local Python implementation (`pygame_app/main.py`, `pygame_app/algorithms.py`, `pygame_app/grid.py`)
 - Purpose: confirm benchmark values used in the report and slides
 - Validation date: 2026-04-18
 - Note: the browser custom mode was not used for this reproducibility check
