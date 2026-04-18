@@ -36,17 +36,17 @@ The user can place weighted terrain, reposition the start and goal, and choose f
 
 We built the project in a clear sequence. First, we modeled the weighted grid and its terrain costs. Second, we implemented a shared search framework that could run Dijkstra and multiple A* heuristics on the same input. Third, we added a side-by-side visualization so that the search process could be seen, not just measured at the end. Fourth, we added interaction features such as terrain painting, preset maps, start/goal movement, and step-through controls. Finally, we logged run results to a CSV file so that representative runs could be compared outside the live demo.
 
-This sequence matters because the project is not only an algorithm implementation. It is also a comparison environment. Because of that, the visualization and logging layers are part of the methodology, not just presentation details.
+This sequence matters because the project is not only an algorithm implementation. It is also a comparison environment. Because of that, the visualization and logging layers are part of the methodology, not just interface details.
 
 ### Implementation Iterations
 
-The project also went through several iterations that improved clarity, reproducibility, and presentation quality.
+The project also went through several iterations that improved clarity, reproducibility, and usability.
 
 **Iteration 1: Core weighted-grid search comparison.** We first implemented the weighted grid model, the terrain-cost system, and the shared generator-based search framework for Dijkstra, A* Manhattan, and A* Euclidean. The goal at this stage was to make sure all three algorithms could run on the same input and be compared fairly under the same movement model and cost definition.
 
 **Iteration 2: Interactive comparison environment.** After the baseline search logic was working, we added the synchronized three-panel visualizer, terrain editing, preset maps, and run/pause/step controls. The goal here was to make the search process visible so that heuristic behavior could be understood visually instead of only through the final path.
 
-**Iteration 3: Logging, browser access, and presentation refinement.** Finally, we added metric logging for the local Pygame version, prepared a browser version rooted at `index.html`, and aligned the project structure and interface wording for presentation and submission. The goal here was to make the project easier to validate, easier to demonstrate, and better suited for the final report and presentation.
+**Iteration 3: Logging and browser access.** Finally, we added metric logging for the local Pygame version and prepared a browser version rooted at `index.html`. The goal here was to make runs easier to validate across sessions and to make the same comparison environment available both locally and in the browser.
 
 ### Methodology and Implementation
 
