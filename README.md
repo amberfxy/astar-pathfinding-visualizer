@@ -31,6 +31,7 @@ pip install -r requirements.txt
 ### Browser Custom Mode
 
 ```bash
+# Run from the repository root
 python3 -m http.server 8000
 ```
 
@@ -40,7 +41,7 @@ Then open:
 
 This mode uses browser-side JavaScript modules from `src/`, so a local static server is the safest way to run it.
 
-`index.html` is also the repository's GitHub Pages entry point. If GitHub Pages is enabled for the repository root, the browser version can be published directly as a static site. The older `game.html` path is kept as a redirect to the same browser interface.
+`index.html` is also the repository's GitHub Pages entry point. The browser version is published at [https://pstereoluna.github.io/5800-Astar-Visualizer/](https://pstereoluna.github.io/5800-Astar-Visualizer/). The older `game.html` path is kept as a redirect to the same browser interface.
 
 ### Local Python Run
 
