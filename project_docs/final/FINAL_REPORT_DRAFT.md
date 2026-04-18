@@ -289,9 +289,11 @@ The full source code is submitted separately in the ZIP file. The excerpts below
 
 ```python
 while heap:
+    t0 = time.perf_counter()
     _, _, pos = heapq.heappop(heap)
 
     if pos in closed:
+        accumulated_time += time.perf_counter() - t0
         open_set.discard(pos)
         continue
 
@@ -299,11 +301,17 @@ while heap:
     closed.add(pos)
     state.current = pos
     state.nodes_expanded = len(closed)
-    yield state
+    accumulated_time += time.perf_counter() - t0
+    
+    yield state          # ← animation pause
+    
+    t0 = time.perf_counter()
 
     if pos == goal:
         state.path = _reconstruct(came_from, goal)
         state.path_cost = g[goal]
+        accumulated_time += time.perf_counter() - t0
+        state.runtime_ms = accumulated_time * 1000
         state.done = True
         state.found = True
         yield state
