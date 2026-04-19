@@ -30,7 +30,9 @@ The second is `h(n)`, which is the heuristic, meaning an estimate of the remaini
 
 Then A* adds them together as `f(n) = g(n) + h(n)`, and uses that value to guide the search.
 
-A useful reference point is that Dijkstra’s algorithm is basically the special case where the heuristic is zero, so it stays optimal but doesn’t get any goal-directed guidance.”
+A useful reference point is that Dijkstra’s algorithm is basically the special case where the heuristic is zero, so it stays optimal but doesn’t get any goal-directed guidance.
+
+As a concrete example, imagine we’re standing at a node three cells away from the goal. `g(n)` might be 7, meaning we’ve already paid 7 units of cost to get here. `h(n)` would be our estimate for the remaining 3 cells. A* always picks the node with the smallest `f(n)` to expand next, which is what gives it goal-directed behavior that Dijkstra lacks.”
 
 ### Slide 3 — Why Heuristic Choice Matters
 
@@ -44,7 +46,9 @@ Do admissible heuristics still preserve optimality on a weighted grid?
 
 Which heuristic expands fewer nodes on the same input?
 
-And can we make those differences visible in a way that people can actually observe, instead of only reading about them in pseudocode?”
+And can we make those differences visible in a way that people can actually observe, instead of only reading about them in pseudocode?
+
+Being able to *see* that difference, not just read about it, is really what motivated us to build an interactive visualizer instead of just writing a report.”
 
 ### Slide 4 — Problem Setup
 
@@ -116,7 +120,9 @@ At the same time, their search effort was very different.
 
 Dijkstra expanded 368 nodes, A* Manhattan expanded 183 nodes, and A* Euclidean expanded 233 nodes.
 
-So compared with Dijkstra, Manhattan reduced node expansion by about 50 percent, and Euclidean reduced it by about 37 percent.
+So compared with Dijkstra, Manhattan reduced node expansion by 50 percent, and Euclidean reduced it by 37 percent.
+
+You might wonder why Manhattan beats Euclidean here, given that both are admissible. The reason is pretty intuitive once you think about movement. On a four-direction grid, you can only step along the axes, so the true remaining cost is always at least the Manhattan distance. Euclidean is the straight-line estimate, which is always smaller than or equal to Manhattan — so it’s a *looser* lower bound. A looser heuristic gives weaker guidance, and the search starts looking more like Dijkstra. Manhattan is tighter, so it prunes more aggressively. That theoretical story is exactly what the numbers show: 183 expansions versus 233.
 
 This is the clearest answer to our main question: admissible heuristics preserved optimal path cost, but the choice of heuristic clearly changed efficiency.”
 
@@ -153,6 +159,8 @@ Our project instead provides an interactive comparison environment, side-by-side
 The grid is fixed at 20 by 20, movement is limited to four directions, and the comparison only includes three algorithms.
 
 Also, while we do have representative benchmark and testing evidence, we do not claim to have a full large-scale automated experiment pipeline in this final submission.
+
+To be upfront: the numbers we reported come from one representative run per scenario, not an averaged sweep across many seeds. Scaling this into a proper statistical study is one of our main future directions.
 
 For future work, we’d like to support larger and variable grid sizes, add eight-direction movement, include more heuristics, and build a more systematic benchmarking pipeline.”
 
