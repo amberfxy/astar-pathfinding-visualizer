@@ -278,9 +278,6 @@ class App:
         ('predict', 'Predict Path', None, 'predict'),
     ]
 
-    # Layer 1: The Trap constraints
-    MAX_WALLS = 5
-
     def __init__(self) -> None:
         pygame.init()
         pygame.display.set_caption(
@@ -305,7 +302,6 @@ class App:
         self.show_vals = True
 
         self.predicted_path: list[tuple[int, int]] = []
-        self.wall_count = 0  # Number of walls placed by the player
         
         # ── Algorithm generators & latest states ───────────────────────────
         self.gens:   list                          = [None, None, None]
@@ -493,8 +489,6 @@ class App:
                         if (row, col) in self.predicted_path:
                             self.predicted_path.remove((row, col))
                     else:
-                        if self.grid.get_terrain(row, col) == 'wall':
-                            self.wall_count = max(0, self.wall_count - 1)
                         self.grid.set_terrain(row, col, 'empty')
                 elif self.brush == 'start':
                     self.grid.move_start(row, col)
@@ -504,16 +498,7 @@ class App:
                     if (row, col) not in self.predicted_path:
                         self.predicted_path.append((row, col))
                 else:
-                    if self.brush == 'wall' and self.grid.get_terrain(row, col) != 'wall':
-                        if self.wall_count < self.MAX_WALLS:
-                            self.grid.set_terrain(row, col, self.brush)
-                            self.wall_count += 1
-                        else:
-                            print("Max walls reached!")
-                    elif self.brush != 'wall':
-                        if self.grid.get_terrain(row, col) == 'wall':
-                            self.wall_count = max(0, self.wall_count - 1)
-                        self.grid.set_terrain(row, col, self.brush)
+                    self.grid.set_terrain(row, col, self.brush)
 
                 # Invalidate results when grid changes
                 if any(s is not None for s in self.states):
@@ -569,7 +554,6 @@ class App:
         self._do_reset()
         self.grid.clear()
         self.predicted_path.clear()
-        self.wall_count = 0
 
     def _toggle_vals(self) -> None:
         self.show_vals = not self.show_vals
@@ -790,25 +774,10 @@ class App:
         lines = [
             f'Expanded : {state.nodes_expanded}',
         ]
-        
-        # Calculate predicted cost
-        predicted_cost = 0.0
-        if self.predicted_path:
-            for p in self.predicted_path:
-                predicted_cost += self.grid.get_cost(p[0], p[1])
-                
-        if self.predicted_path:
-            lines.append(f'Predict Cost: {predicted_cost}')
-            
+
         if state.done:
             if state.found:
                 lines.append(f'Path cost: {state.path_cost:.2f}  |  len: {len(state.path)}')
-                if self.predicted_path:
-                    if abs(predicted_cost - state.path_cost) < 0.001:
-                        lines.append(f'Prediction: EXACT MATCH!')
-                    else:
-                        lines.append(f'Prediction diff: {abs(predicted_cost - state.path_cost)}')
-                        
                 lines.append(f'Runtime  : {state.runtime_ms:.3f} ms')
                 lines.append('Status   : ✓ Path found')
             else:
@@ -829,10 +798,15 @@ class App:
         pygame.draw.rect(self.screen, C_METRICS, rect)
         pygame.draw.line(self.screen, C_BORDER, (0, METRICS_Y), (WIN_W, METRICS_Y))
 
+        predicted_cost = self._predicted_cost()
+        has_prediction = bool(self.predicted_path)
+
         if not any(s is not None and s.done for s in self.states):
             hint = self.f_small.render(
                 'Run the algorithms to see a comparison table here.', True, C_DIM)
             self.screen.blit(hint, (20, METRICS_Y + (METRICS_H - hint.get_height()) // 2))
+            if has_prediction:
+                self._draw_prediction_summary(770, METRICS_Y + 6, WIN_W - 790, METRICS_H - 12, predicted_cost)
             return
 
         # Comparison table header
@@ -862,6 +836,9 @@ class App:
                 surf = self.f_metrics.render(val, True, c)
                 self.screen.blit(surf, (tx, ty))
                 tx  += w
+
+        if has_prediction:
+            self._draw_prediction_summary(770, METRICS_Y + 6, WIN_W - 790, METRICS_H - 12, predicted_cost)
 
     # ── Legend row ─────────────────────────────────────────────────────────
 
@@ -908,6 +885,62 @@ class App:
                   ))
         ss = self.f_small.render(status, True, C_DIM)
         self.screen.blit(ss, (16, LEGEND_Y + 50))
+
+    def _predicted_cost(self) -> float:
+        return sum(self.grid.get_cost(r, c) for r, c in self.predicted_path)
+
+    def _draw_prediction_summary(
+        self,
+        x: int,
+        y: int,
+        w: int,
+        h: int,
+        predicted_cost: float,
+    ) -> None:
+        rect = pygame.Rect(x, y, w, h)
+        pygame.draw.rect(self.screen, (255, 255, 255), rect, border_radius=10)
+        pygame.draw.rect(self.screen, C_BORDER, rect, 1, border_radius=10)
+
+        title = self.f_label.render('Prediction', True, C_ACCENT)
+        self.screen.blit(title, (x + 12, y + 8))
+
+        meta = self.f_small.render(
+            f'{len(self.predicted_path)} cells  |  Predicted cost: {predicted_cost:.2f}',
+            True,
+            C_DIM,
+        )
+        self.screen.blit(meta, (x + 14, y + 30))
+
+        if not any(s is not None and s.done for s in self.states):
+            hint = self.f_small.render(
+                'Run the algorithms to compare your prediction.',
+                True,
+                C_DIM,
+            )
+            self.screen.blit(hint, (x + 14, y + 48))
+            return
+
+        parts: list[str] = []
+        for algo_name, state, color in zip(ALGO_NAMES, self.states, ALGO_COLORS):
+            if state is None or not state.done:
+                continue
+
+            if not state.found:
+                result = 'no path'
+            elif abs(predicted_cost - state.path_cost) < 0.001:
+                result = 'match'
+            else:
+                result = f'diff {abs(predicted_cost - state.path_cost):.2f}'
+
+            short_name = (
+                'Dijkstra' if algo_name == 'Dijkstra'
+                else 'A* M' if 'Manhattan' in algo_name
+                else 'A* E'
+            )
+            parts.append(f'{short_name}: {result}')
+
+        summary = self.f_small.render('  |  '.join(parts), True, C_TEXT)
+        self.screen.blit(summary, (x + 14, y + 48))
 
     # ── Utilities ──────────────────────────────────────────────────────────
 

@@ -70,43 +70,79 @@ The outputs include nodes expanded, path cost, path length, runtime, whether a p
 
 ## Xiaoyuan Lu
 
-### Slide 5 — Methodology
+Total budget: ~4 min 30 sec
+- Slide 5 speaking: ~1:00
+- Slide 6 speaking: ~0:40 (ends with demo lead-in)
+- Live demo: ~1:45
+- Return to Slide 6 + handoff: ~0:20
 
-“Our methodology compares three algorithms on the same weighted grid.
+### Slide 5 — Methodology (~1:00)
 
-The first is Dijkstra, which we use as the uninformed baseline.
+“Now that we’ve defined the problem, let’s look at how we actually compare the three algorithms.
 
-The second is A* with Manhattan distance.
+Our methodology runs three algorithms on the same weighted grid. The first is Dijkstra, our uninformed baseline, where `h(n)` is zero. The second is A* with Manhattan distance. And the third is A* with Euclidean distance.
 
-And the third is A* with Euclidean distance.
+Under our four-direction weighted-grid model, both Manhattan and Euclidean are admissible — meaning they never overestimate the true remaining cost — so both should preserve optimal path cost. What we really want to compare is efficiency: how many nodes each one expands before reaching the solution.
 
-Under our current four-direction weighted-grid model, both Manhattan and Euclidean are admissible, so they should still preserve optimal path cost.
+Implementation-wise, our search is generator-based. Each algorithm yields its state after every node expansion, which is what lets us visualize the open set, the closed set, the current node, and the final path step by step, side by side.”
 
-What we really want to compare is efficiency, especially how many nodes they expand before reaching the solution.
+### Slide 6 — System Interface & Demo Lead-in (~0:40)
 
-Implementation-wise, our search is generator-based, which means each algorithm yields its state after every node expansion.
+“The project has two interfaces for the same comparison task. The browser version is an HTML and JavaScript build for quick, zero-install access. The local version is a Pygame interface that we use for CSV-based validation and a few extra features like wall-limited gameplay and prediction feedback.
 
-That lets us visualize the open set, the closed set, the current node, and the final path step by step, side by side.”
+Across both versions, users can paint weighted terrain, move the start and goal, load preset maps — maze, barrier, random — and run, pause, or step through all three algorithms side by side. An optional `f(n)` overlay shows the cost estimate on every expanded cell.
 
-### Slide 6 — System Interface & Demo Overview
+But rather than just describe it, let me show you what it actually looks like.”
 
-“The project currently has two interfaces for the same comparison task.
+### Live Demo — ~1:45
 
-The browser version is an HTML and JavaScript interface that we publish through GitHub Pages.
+*(Switch from slides to the running visualizer window. Keep the PPT available to switch back.)*
 
-The local version is a Pygame interface that we use for local execution and CSV-based validation.
+**Beat 1 — frame the screen (~15s)**
 
-Across both versions, users can paint weighted terrain and walls, move the start and goal, choose preset maps like maze, barrier, and random, and run all three algorithms side by side with run, pause, and step controls.
+“On the screen you can see three panels running the same grid — Dijkstra on the left, A* Manhattan in the middle, A* Euclidean on the right.”
 
-Users can also turn on `f(n)` overlays to inspect the search state more closely.
+*(Mouse across each panel header.)*
 
-The local Pygame version includes a few extra features, like CSV logging, a wall-limited gameplay mode, and more detailed prediction feedback.
+**Beat 2 — load the preset (~15s)**
 
-So overall, the project is not just computing one path. It’s giving users a full environment for comparing search behavior interactively.”
+“Let me load the barrier preset. This is the map our benchmark is based on — a vertical wall that forces every algorithm to find the same detour.”
 
-### Handoff
+*(Click Barrier. Pause 2 seconds so the audience sees the shared map.)*
 
-“With the method and system in place, Xinyuan will now go over the benchmark results, testing, and final conclusions.”
+**Beat 3 — run and narrate (~55s)** — the centerpiece
+
+*(Set speed to Medium, then press R.)*
+
+“Watch Dijkstra on the left first. Because its heuristic is zero, it expands outward like a wave, exploring in every direction equally.”
+
+*(Pause ~3 seconds while Dijkstra visibly spreads.)*
+
+“Manhattan, in the middle, is clearly more focused — it’s pulled toward the goal because the heuristic gives it directional guidance.”
+
+*(Pause ~3 seconds.)*
+
+“Euclidean is in between. It’s still guided, but it underestimates the remaining cost more, so it spreads wider than Manhattan before locking onto the goal.”
+
+*(Let all three algorithms finish.)*
+
+**Beat 4 — point to the result (~20s)**
+
+*(Mouse hovers across the metrics at the bottom of each panel.)*
+
+“All three converge on the same optimal path cost — so admissibility held, exactly as the theory predicts. But look at the nodes expanded — they’re very different. That difference is what Xinyuan is about to unpack.”
+
+### Return to Slide 6 + Handoff (~0:20)
+
+*(Switch back to PPT — still on Slide 6 or advance to a clean transition slide.)*
+
+“So that’s the system — same grid, same rules, three different search strategies, all observable side by side. With the method and demo in place, Xinyuan will now walk through the benchmark results, the additional testing scenarios, and our final conclusions.”
+
+### Demo Risk Notes (not spoken)
+
+- Before the talk starts, open the visualizer window and confirm it runs cleanly.
+- Have a 60–90 second screen recording of a clean demo as a backup. If the live run stalls, switch to the video without comment.
+- If only the local Pygame version is available on the day, drop the word `browser` from Slide 6 and say `an HTML/JavaScript build and a local Pygame build` instead.
 
 ## Xinyuan Fan
 
