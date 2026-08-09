@@ -36,6 +36,7 @@ Git author **Amber** = Xinyuan Fan.
 - Run / pause / step controls and `f(n)` overlays
 - Preset maps (maze, barrier, random) and interactive map editing
 - Local CSV experiment logging + browser demo via GitHub Pages
+
 ## Requirements
 
 - Python 3.10+
