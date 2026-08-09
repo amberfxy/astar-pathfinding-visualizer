@@ -17,17 +17,15 @@ The repository includes:
 |---|---|
 | **Jiaxin Jia** | 3-panel Pygame UI, terrain editing, interaction design |
 | **Xiaoyuan Lu** | Generator-based Dijkstra / A\* search core (min-heap open set) |
-| **Xinyuan Fan (Amber)** | Prototyping, interactive gameplay features, metrics instrumentation, performance comparison |
+| **Amber** | Prototyping, interactive gameplay features, metrics instrumentation, performance comparison |
 
-## My Contributions (Xinyuan Fan / Amber)
+## My Contributions
 
 - Prototyped early interactive pathfinding flows and contributed gameplay features (wall-limited mode, predict-path cost comparison)
 - Built structured experiment logging (`pygame_app/logger.py`) with per-run metrics: nodes expanded, path cost, path length, runtime, success/failure, and grid-state hashing
 - Fixed runtime measurement in the search loop so logged / on-screen timing reflects actual algorithm work
 - Added path visualization polish (neon pulse) and UI layout fixes for control usability
 - Benchmarked Dijkstra vs A\* heuristics on shared weighted-grid inputs; A\* Manhattan cut node expansions by ~50% vs Dijkstra at the same optimal path cost
-
-Git author **Amber** = Xinyuan Fan.
 
 ## Features
 
