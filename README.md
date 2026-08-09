@@ -1,6 +1,6 @@
 # Interactive A* Pathfinding Visualizer
 
-> Personal portfolio fork of a CS 5800 team project.  
+> Portfolio fork of a team pathfinding project.  
 > Upstream: [pstereoluna/5800-Astar-Visualizer](https://github.com/pstereoluna/5800-Astar-Visualizer)  
 > Live demo: [GitHub Pages](https://pstereoluna.github.io/5800-Astar-Visualizer/)
 
@@ -13,32 +13,29 @@ The repository includes:
 
 ## Team
 
-| Member | Role |
+| Member | Focus |
 |---|---|
-| **Jiaxin Jia** | UI / interactive visualization (3-panel Pygame interface, terrain brushes, game layers) |
-| **Xiaoyuan Lu** | Core search algorithms (generator-based Dijkstra / A\* with min-heap) |
-| **Xinyuan Fan (Amber)** | Evaluation, metrics logging, visual polish, benchmarking & report support |
+| **Jiaxin Jia** | 3-panel Pygame UI, terrain editing, interaction design |
+| **Xiaoyuan Lu** | Generator-based Dijkstra / A\* search core (min-heap open set) |
+| **Xinyuan Fan (Amber)** | Prototyping, interactive gameplay features, metrics instrumentation, performance comparison |
 
 ## My Contributions (Xinyuan Fan / Amber)
 
-I focused on turning the visualizer into a **measurable comparison tool** and improving result presentation:
+- Prototyped early interactive pathfinding flows and contributed gameplay features (wall-limited mode, predict-path cost comparison)
+- Built structured experiment logging (`pygame_app/logger.py`) with per-run metrics: nodes expanded, path cost, path length, runtime, success/failure, and grid-state hashing
+- Fixed runtime measurement in the search loop so logged / on-screen timing reflects actual algorithm work
+- Added path visualization polish (neon pulse) and UI layout fixes for control usability
+- Benchmarked Dijkstra vs A\* heuristics on shared weighted-grid inputs; A\* Manhattan cut node expansions by ~50% vs Dijkstra at the same optimal path cost
 
-- **Metrics & logging** — implemented structured CSV logging (`pygame_app/logger.py`) for nodes expanded, path cost, path length, runtime, and success/failure, with grid-state hashing for reproducible runs
-- **Benchmarking & analysis** — ran and interpreted side-by-side comparisons; representative results show A\* Manhattan reducing node expansions by about **50%** versus Dijkstra at equivalent optimal path cost
-- **Visual polish** — contributed optimal-path neon pulse rendering and UI layout fixes (e.g. preset button positioning)
-- **Runtime metric correctness** — fixed algorithm runtime calculation used in on-screen / logged metrics
-- **Documentation & deliverables** — updated README / report materials and supported evaluation slides for the final presentation
+Git author **Amber** = Xinyuan Fan.
 
-Git commits under the author name **Amber** map to **Xinyuan Fan**.
-
-## What We Built (Team)
+## Features
 
 - Weighted-grid pathfinding with terrain costs (empty / grass / swamp / wall)
 - Synchronized three-panel visualization of Dijkstra vs two A\* heuristics
 - Run / pause / step controls and `f(n)` overlays
 - Preset maps (maze, barrier, random) and interactive map editing
 - Local CSV experiment logging + browser demo via GitHub Pages
-
 ## Requirements
 
 - Python 3.10+
@@ -115,7 +112,7 @@ pygame_app/grid.py         — Weighted grid + presets
 pygame_app/logger.py       — CSV metrics logging
 src/states/customState.js  — Browser three-panel mode
 src/utils.js               — Browser MinHeap utilities
-project_docs/              — Course reports and notes
+project_docs/              — Design notes and writeups
 project_data/              — Local metrics logs
 ```
 
