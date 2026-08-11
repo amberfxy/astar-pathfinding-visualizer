@@ -1,36 +1,44 @@
+<div align="center">
+
 # Interactive A* Pathfinding Visualizer
 
-> Portfolio fork of a team pathfinding project.  
-> Upstream: [pstereoluna/5800-Astar-Visualizer](https://github.com/pstereoluna/5800-Astar-Visualizer)  
-> Live demo: [GitHub Pages](https://pstereoluna.github.io/5800-Astar-Visualizer/)
+Side-by-side comparison of **Dijkstra**, **A\* (Manhattan)**, and **A\* (Euclidean)** on a weighted grid.
 
-Interactive side-by-side comparison of **Dijkstra**, **A\* (Manhattan)**, and **A\* (Euclidean)** on a weighted 20×20 grid.
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-Browser-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Pygame](https://img.shields.io/badge/Pygame-Local%20UI-green)](https://www.pygame.org/)
+[![Algorithms](https://img.shields.io/badge/Algorithms-A*%20%7C%20Dijkstra-0A66C2)](#features)
+[![Demo](https://img.shields.io/badge/Live-GitHub%20Pages-222?logo=github)](https://pstereoluna.github.io/5800-Astar-Visualizer/)
 
-The repository includes:
+**Team project** · Portfolio fork maintained by [@amberfxy](https://github.com/amberfxy) (**Amber Fan**)  
+Upstream: [pstereoluna/5800-Astar-Visualizer](https://github.com/pstereoluna/5800-Astar-Visualizer) · [Live demo](https://pstereoluna.github.io/5800-Astar-Visualizer/)
 
-- a **browser version** (`index.html` + JavaScript in `src/`)
-- a **local Pygame version** (`python3 -m pygame_app`)
+</div>
+
+---
+
+Browser version (`index.html` + JavaScript) and local Pygame version (`python3 -m pygame_app`) on a weighted **20×20** grid.
 
 ## Team
 
 | Member | Focus |
-|---|---|
+|--------|------|
 | **Jiaxin Jia** | 3-panel Pygame UI, terrain editing, interaction design |
 | **Xiaoyuan Lu** | Generator-based Dijkstra / A\* search core (min-heap open set) |
-| **Amber** | Prototyping, interactive gameplay features, metrics instrumentation, performance comparison |
+| **Amber Fan ([@amberfxy](https://github.com/amberfxy))** | Prototyping, interactive features, metrics logging, performance comparison |
 
-## My Contributions
+## My contributions
 
-- Prototyped early interactive pathfinding flows and contributed gameplay features (wall-limited mode, predict-path cost comparison)
-- Built structured experiment logging (`pygame_app/logger.py`) with per-run metrics: nodes expanded, path cost, path length, runtime, success/failure, and grid-state hashing
-- Fixed runtime measurement in the search loop so logged / on-screen timing reflects actual algorithm work
-- Added path visualization polish (neon pulse) and UI layout fixes for control usability
-- Benchmarked Dijkstra vs A\* heuristics on shared weighted-grid inputs; A\* Manhattan cut node expansions by ~50% vs Dijkstra at the same optimal path cost
+- Prototyped interactive pathfinding flows and gameplay features (wall-limited mode, predict-path cost comparison)
+- Built structured experiment logging (`pygame_app/logger.py`): nodes expanded, path cost, path length, runtime, success/failure, grid-state hashing
+- Fixed runtime measurement so on-screen / logged timing reflects actual search work
+- Path visualization polish and UI layout fixes
+- Benchmarked Dijkstra vs A\* heuristics on shared weighted grids; **A\* Manhattan cut node expansions by ~50%** vs Dijkstra at the same optimal path cost
 
 ## Features
 
 - Weighted-grid pathfinding with terrain costs (empty / grass / swamp / wall)
-- Synchronized three-panel visualization of Dijkstra vs two A\* heuristics
+- Synchronized three-panel visualization: Dijkstra vs two A\* heuristics
 - Run / pause / step controls and `f(n)` overlays
 - Preset maps (maze, barrier, random) and interactive map editing
 - Local CSV experiment logging + browser demo via GitHub Pages
@@ -52,45 +60,43 @@ pip install -r requirements.txt
 
 ## Running
 
-### Browser Custom Mode
+### Browser
 
 ```bash
 python3 -m http.server 8000
 ```
 
-Then open [http://localhost:8000/](http://localhost:8000/).
+Open http://localhost:8000/  
 
-Published demo: [https://pstereoluna.github.io/5800-Astar-Visualizer/](https://pstereoluna.github.io/5800-Astar-Visualizer/)
+Published demo: https://pstereoluna.github.io/5800-Astar-Visualizer/
 
-### Local Pygame Version
+### Local Pygame
 
 ```bash
 python3 -m pygame_app
 ```
 
-## Feature Summary
+## Feature summary
 
-### Shared Across Both Interfaces
+### Shared (browser + Pygame)
 
 - Weighted 20×20 grid
-- Three simultaneous algorithm panels: Dijkstra, A\* Manhattan, A\* Euclidean
-- Terrain painting (Wall, Grass, Swamp), movable start/goal
-- Preset maps: Maze, Barrier, Random
-- Run / Pause / Step and speed controls
-- `f(n)` overlays and on-screen comparison metrics
+- Three algorithm panels: Dijkstra, A\* Manhattan, A\* Euclidean
+- Terrain painting, movable start/goal, presets
+- Run / Pause / Step, speed controls, `f(n)` overlays, on-screen metrics
 
-### Local Pygame Only
+### Pygame only
 
 - CSV logging to `project_data/metrics_log.csv`
 - Wall-limited mechanic (up to 5 wall cells)
 - Predict-path cost feedback
 
-## Metric Logging
+## Metric logging
 
-Local Pygame runs append rows to `project_data/metrics_log.csv`:
+Local Pygame runs append to `project_data/metrics_log.csv`:
 
 | Column | Description |
-|---|---|
+|--------|-------------|
 | timestamp | ISO timestamp of the run |
 | algorithm | Dijkstra / A\* Manhattan / A\* Euclidean |
 | grid_hash | SHA256 fingerprint of grid state |
@@ -100,7 +106,7 @@ Local Pygame runs append rows to `project_data/metrics_log.csv`:
 | runtime_ms | Recorded runtime (environment-sensitive) |
 | found | Whether a path was found |
 
-## Project Structure
+## Project structure
 
 ```text
 index.html                 — Browser / GitHub Pages entry
